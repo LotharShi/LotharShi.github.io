@@ -6,15 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="前言书本的第一章中介绍了大量的古典密码，而这些古典密码都已经全部被破解了，且因为没有严格的安全定义，无法证明安全性。因此在书本的第二章中引入了完美安全的定义，但是通过一次一密的方案可以得出，满足这种安全性定义的方案，其密钥空间$|\mathcal{K}|\textgreater$明文空间$|\mathcal{M}|$，因此在现实生活中往往很难达到。 所以考虑到实际需求，书本给出了一种新的安全性定义">
+    <meta name="description" content="前言书本的第一章中介绍了大量的古典密码，而这些古典密码都已经全部被破解了，且因为没有严格的安全定义，无法证明安全性。因此在书本的第二章中引入了完美安全的定义，但是通过一次一密的方案可以得出，满足这种安全性定义的方案，其密钥空间$|\mathcal{K}| &gt; $明文空间$|\mathcal{M}|$，因此在现实生活中往往很难达到。 所以考虑到实际需求，书本给出了一种新的安全性定义，即计算安全">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算安全">
 <meta property="og:url" content="http://lotharshi.github.io/2022/08/25/%E8%AE%A1%E7%AE%97%E5%AE%89%E5%85%A8/index.html">
 <meta property="og:site_name" content="Where Lothar Write Blogs">
-<meta property="og:description" content="前言书本的第一章中介绍了大量的古典密码，而这些古典密码都已经全部被破解了，且因为没有严格的安全定义，无法证明安全性。因此在书本的第二章中引入了完美安全的定义，但是通过一次一密的方案可以得出，满足这种安全性定义的方案，其密钥空间$|\mathcal{K}|\textgreater$明文空间$|\mathcal{M}|$，因此在现实生活中往往很难达到。 所以考虑到实际需求，书本给出了一种新的安全性定义">
+<meta property="og:description" content="前言书本的第一章中介绍了大量的古典密码，而这些古典密码都已经全部被破解了，且因为没有严格的安全定义，无法证明安全性。因此在书本的第二章中引入了完美安全的定义，但是通过一次一密的方案可以得出，满足这种安全性定义的方案，其密钥空间$|\mathcal{K}| &gt; $明文空间$|\mathcal{M}|$，因此在现实生活中往往很难达到。 所以考虑到实际需求，书本给出了一种新的安全性定义，即计算安全">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2022-08-25T04:56:32.000Z">
-<meta property="article:modified_time" content="2022-08-25T07:08:33.815Z">
+<meta property="article:modified_time" content="2022-08-30T04:56:18.897Z">
 <meta property="article:author" content="Lothar">
 <meta property="article:tag" content="Crypto">
 <meta name="twitter:card" content="summary">
@@ -162,7 +162,7 @@
   
 
   <div class="content" itemprop="articleBody">
-    <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>书本的第一章中介绍了大量的古典密码，而这些古典密码都已经全部被破解了，且因为没有严格的安全定义，无法证明安全性。因此在书本的第二章中引入了完美安全的定义，但是通过一次一密的方案可以得出，满足这种安全性定义的方案，其密钥空间$|\mathcal{K}|\textgreater$明文空间$|\mathcal{M}|$，因此在现实生活中往往很难达到。</p>
+    <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>书本的第一章中介绍了大量的古典密码，而这些古典密码都已经全部被破解了，且因为没有严格的安全定义，无法证明安全性。因此在书本的第二章中引入了完美安全的定义，但是通过一次一密的方案可以得出，满足这种安全性定义的方案，其密钥空间$|\mathcal{K}| &gt; $明文空间$|\mathcal{M}|$，因此在现实生活中往往很难达到。</p>
 <p>所以考虑到实际需求，书本给出了一种新的安全性定义，即计算安全(Computational Security)，考虑有限算力的敌手和泄露明文信息的极小概率。</p>
 <h3 id="三种安全"><a href="#三种安全" class="headerlink" title="三种安全"></a>三种安全</h3><p>除了完美安全外，还有计算安全和统计安全。</p>
 <h4 id="完美安全满足"><a href="#完美安全满足" class="headerlink" title="完美安全满足"></a>完美安全满足</h4><ul>
@@ -184,7 +184,7 @@
 <p>相比于用具体的数值，使用函数和参数来定义安全性要更加mathematical，也更要严谨科学。因此引入一个安全参数$n$，使用关于$n$的函数来定义敌手算力和攻破概率。</p>
 <h5 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h5><p>如果运行时间为关于安全参数$n$的概率多项式函数(PPT, probabilistic polynomial time)，攻破密码方案的概率是可忽略的(negligible)，则称该方案是安全的。</p>
 <h5 id="PPT和Negligible"><a href="#PPT和Negligible" class="headerlink" title="PPT和Negligible"></a>PPT和Negligible</h5><p>一个算法$\mathcal{A}$满足下述条件则称为多项式时间算法(PPT)：存在一个多项式$p()$，对于任何输入$x \in {0,1}$，计算出$\mathcal{A}(x)$最多花费$p(|x|)$步。</p>
-<p>Negligible则是指对于任意多项式$p$，以及所有足够大的自然数$n$，函数$f$都满足$f(n) \textless \frac{1}{p(n)}$。</p>
+<p>Negligible则是指对于任意多项式$p$，以及所有足够大的自然数$n$，函数$f$都满足$f(n) &lt; \frac{1}{p(n)}$。</p>
 <h4 id="不可区分"><a href="#不可区分" class="headerlink" title="不可区分"></a>不可区分</h4><p>在引入了安全参数$n$的情况下，计算安全中的不可区分和完美不可区分的区别可以表示如下：</p>
 <h5 id="算力"><a href="#算力" class="headerlink" title="算力"></a>算力</h5><ul>
 <li>完美不可区分：敌手拥有无限算力</li>
