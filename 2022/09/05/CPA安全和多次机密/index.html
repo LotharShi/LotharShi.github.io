@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="CPA安全Oracle有这么一个网站Oracle， 可以问Oracle一个问题，然后得到一个回答。而在密码学方案中，也可以有类似的情景，即攻击者可以选择明文$m$发送给加密者(这里就是Oracle)，加密者通过加密算法$Enc_k(m)$得到一个密文$c$，返回给攻击者。这个过程可以看作一次查询，而查询的内容是由攻击者定的，并可以进行任意多次，且每一次都用的是相同的密钥$k$。 例子参考教材上有一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CPA安全和多次机密">
+<meta property="og:url" content="http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/index.html">
+<meta property="og:site_name" content="Where Lothar Write Blogs">
+<meta property="og:description" content="CPA安全Oracle有这么一个网站Oracle， 可以问Oracle一个问题，然后得到一个回答。而在密码学方案中，也可以有类似的情景，即攻击者可以选择明文$m$发送给加密者(这里就是Oracle)，加密者通过加密算法$Enc_k(m)$得到一个密文$c$，返回给攻击者。这个过程可以看作一次查询，而查询的内容是由攻击者定的，并可以进行任意多次，且每一次都用的是相同的密钥$k$。 例子参考教材上有一">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://lotharshi.github.io/images/image-20220905153553662.png">
+<meta property="article:published_time" content="2022-09-05T07:17:32.000Z">
+<meta property="article:modified_time" content="2022-09-05T08:01:53.917Z">
+<meta property="article:author" content="Lothar">
+<meta property="article:tag" content="Crypto">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lotharshi.github.io/images/image-20220905153553662.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>CPA安全和多次机密</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/LotharShi">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2022/09/05/%E4%BC%AA%E9%9A%8F%E6%9C%BA%E7%94%9F%E6%88%90%E5%99%A8%E5%92%8C%E4%BC%AA%E9%9A%8F%E6%9C%BA%E5%87%BD%E6%95%B0/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&text=CPA安全和多次机密"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&title=CPA安全和多次机密"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&is_video=false&description=CPA安全和多次机密"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CPA安全和多次机密&body=Check out this article: http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&title=CPA安全和多次机密"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&title=CPA安全和多次机密"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&title=CPA安全和多次机密"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&title=CPA安全和多次机密"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&name=CPA安全和多次机密&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&t=CPA安全和多次机密"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#CPA%E5%AE%89%E5%85%A8"><span class="toc-number">1.</span> <span class="toc-text">CPA安全</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Oracle"><span class="toc-number">1.1.</span> <span class="toc-text">Oracle</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90"><span class="toc-number">1.2.</span> <span class="toc-text">例子</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%AB%E6%9C%89oracle%E7%9A%84%E6%95%8C%E6%89%8B%E6%B8%B8%E6%88%8F"><span class="toc-number">1.3.</span> <span class="toc-text">含有oracle的敌手游戏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CPA%E5%AE%89%E5%85%A8%E5%AE%9A%E4%B9%89"><span class="toc-number">1.4.</span> <span class="toc-text">CPA安全定义</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E6%AC%A1%E5%8A%A0%E5%AF%86"><span class="toc-number">2.</span> <span class="toc-text">多次加密</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Left-Right-Oracle"><span class="toc-number">2.1.</span> <span class="toc-text">Left-Right Oracle</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E6%AC%A1%E5%8A%A0%E5%AF%86%E5%92%8CCPA%E5%AE%89%E5%85%A8"><span class="toc-number">2.2.</span> <span class="toc-text">多次加密和CPA安全</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">3.</span> <span class="toc-text"></span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        CPA安全和多次机密
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Lothar</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-09-05T07:17:32.000Z" itemprop="datePublished">2022-09-05</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Crypto/" rel="tag">Crypto</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h3 id="CPA安全"><a href="#CPA安全" class="headerlink" title="CPA安全"></a>CPA安全</h3><h4 id="Oracle"><a href="#Oracle" class="headerlink" title="Oracle"></a>Oracle</h4><p>有这么一个网站<a target="_blank" rel="noopener" href="https://www.ucl.ac.uk/GrandLatMisc/oracle.html">Oracle</a>， 可以问Oracle一个问题，然后得到一个回答。而在密码学方案中，也可以有类似的情景，即攻击者可以选择明文$m$发送给加密者(这里就是Oracle)，加密者通过加密算法$Enc_k(m)$得到一个密文$c$，返回给攻击者。这个过程可以看作一次查询，而查询的内容是由攻击者定的，并可以进行任意多次，且每一次都用的是相同的密钥$k$。</p>
+<h4 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h4><p>参考教材上有一个例子我觉得很有意思也很便于理解：美日两军在中途岛海战中，美军监听到日军要攻击”AF”，但并不知道”AF”是哪里。美军猜测指的是中途岛，于是让中途岛故意发假消息说中途岛缺水，而日军了解到这个消息后发消息给总部说”AF 缺水了”，这就让美军知道了在日军的加密方案中”AF”指的是中途岛。这就是选择明文攻击。</p>
+<h4 id="含有oracle的敌手游戏"><a href="#含有oracle的敌手游戏" class="headerlink" title="含有oracle的敌手游戏"></a>含有oracle的敌手游戏</h4><p>如图所示：</p>
+<p><img src="/images/image-20220905153553662.png" alt="image-20220905153553662"></p>
+<p>在这个游戏中，挑战者生成一个密钥$k$，敌手可以多次使用Oracle $Enc_k(m)$并且可以选择$m_0$和$m_1$。挑战者选择一个$b$，并计算$C &#x3D; Enc_k(m_b)$。敌手可以获得$C$并可以继续使用Oracle来猜测，猜测结果记为$b’$，如果$b’ &#x3D; b$，则输出1，否则输出0。</p>
+<h4 id="CPA安全定义"><a href="#CPA安全定义" class="headerlink" title="CPA安全定义"></a>CPA安全定义</h4><p>一个加密算法$\Pi$在满足以下要求时，是面对选择明文攻击而不可区分的加密算法(即是CPA-secure的)：对任意敌手$\mathcal{A}$，都有一个可忽略函数negl，使得$Pr[PrivK_{\mathcal{A},\Pi}^{cpa}(n) &#x3D; 1] \leq \frac{1}{2} + negl(n)$。</p>
+<h3 id="多次加密"><a href="#多次加密" class="headerlink" title="多次加密"></a>多次加密</h3><h4 id="Left-Right-Oracle"><a href="#Left-Right-Oracle" class="headerlink" title="Left-Right Oracle"></a>Left-Right Oracle</h4><p>攻击者输入等长明文$m_0$, $m_1$给$LR_{k,b}(·,·)$，如果$b$为0则输出$c &#x3D; Enc_k(m_0)$，如果$b$为1则输出$c &#x3D; Enc_k(m_1)$。</p>
+<p>其中，$k$和$b$是提前决定好的。</p>
+<h4 id="多次加密和CPA安全"><a href="#多次加密和CPA安全" class="headerlink" title="多次加密和CPA安全"></a>多次加密和CPA安全</h4><p>一个加密方案$\Pi$​在满足以下要求时，是面对选择明文攻击而不可区分多次加密的加密算法(即是对多次加密而CPA-secure的)：对任意敌手$\mathcal{A}$​，都有一个可忽略函数negl，使得$Pr[PrivK_{\mathcal{A},\Pi}^{LR-cpa}(n) &#x3D; 1] \leq \frac{1}{2} + negl(n)$。</p>
+<h3 id=""><a href="#" class="headerlink" title=""></a></h3>
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/tags/">Writing</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="http://github.com/LotharShi">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#CPA%E5%AE%89%E5%85%A8"><span class="toc-number">1.</span> <span class="toc-text">CPA安全</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Oracle"><span class="toc-number">1.1.</span> <span class="toc-text">Oracle</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90"><span class="toc-number">1.2.</span> <span class="toc-text">例子</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%AB%E6%9C%89oracle%E7%9A%84%E6%95%8C%E6%89%8B%E6%B8%B8%E6%88%8F"><span class="toc-number">1.3.</span> <span class="toc-text">含有oracle的敌手游戏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CPA%E5%AE%89%E5%85%A8%E5%AE%9A%E4%B9%89"><span class="toc-number">1.4.</span> <span class="toc-text">CPA安全定义</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E6%AC%A1%E5%8A%A0%E5%AF%86"><span class="toc-number">2.</span> <span class="toc-text">多次加密</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Left-Right-Oracle"><span class="toc-number">2.1.</span> <span class="toc-text">Left-Right Oracle</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E6%AC%A1%E5%8A%A0%E5%AF%86%E5%92%8CCPA%E5%AE%89%E5%85%A8"><span class="toc-number">2.2.</span> <span class="toc-text">多次加密和CPA安全</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">3.</span> <span class="toc-text"></span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&text=CPA安全和多次机密"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&title=CPA安全和多次机密"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&is_video=false&description=CPA安全和多次机密"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CPA安全和多次机密&body=Check out this article: http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&title=CPA安全和多次机密"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&title=CPA安全和多次机密"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&title=CPA安全和多次机密"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&title=CPA安全和多次机密"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&name=CPA安全和多次机密&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://lotharshi.github.io/2022/09/05/CPA%E5%AE%89%E5%85%A8%E5%92%8C%E5%A4%9A%E6%AC%A1%E6%9C%BA%E5%AF%86/&t=CPA安全和多次机密"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022
+    Lothar
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/LotharShi">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
