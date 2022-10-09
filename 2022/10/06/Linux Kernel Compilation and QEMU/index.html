@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Kernel File CompilationDownload the kernal fileThere should be a lot of mirror websites.  Like this one: https:&#x2F;&#x2F;mirrors.edge.kernel.org&#x2F;pub&#x2F;linux&#x2F;kernel&#x2F; 1$ wget https:&#x2F;&#x2F;mirrors.edge.kernel.org&#x2F;pub&#x2F;l">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux Kernel Compilation and QEMU">
+<meta property="og:url" content="http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/index.html">
+<meta property="og:site_name" content="Where Lothar Write Blogs">
+<meta property="og:description" content="Kernel File CompilationDownload the kernal fileThere should be a lot of mirror websites.  Like this one: https:&#x2F;&#x2F;mirrors.edge.kernel.org&#x2F;pub&#x2F;linux&#x2F;kernel&#x2F; 1$ wget https:&#x2F;&#x2F;mirrors.edge.kernel.org&#x2F;pub&#x2F;l">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://lotharshi.github.io/images/image-20221006215827772.png">
+<meta property="article:published_time" content="2022-10-06T14:05:45.000Z">
+<meta property="article:modified_time" content="2022-10-09T05:32:28.159Z">
+<meta property="article:author" content="Lothar">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lotharshi.github.io/images/image-20221006215827772.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Linux Kernel Compilation and QEMU</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/LotharShi">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2022/09/06/%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%980x400000/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&text=Linux Kernel Compilation and QEMU"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&title=Linux Kernel Compilation and QEMU"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&is_video=false&description=Linux Kernel Compilation and QEMU"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Linux Kernel Compilation and QEMU&body=Check out this article: http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&title=Linux Kernel Compilation and QEMU"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&title=Linux Kernel Compilation and QEMU"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&title=Linux Kernel Compilation and QEMU"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&title=Linux Kernel Compilation and QEMU"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&name=Linux Kernel Compilation and QEMU&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&t=Linux Kernel Compilation and QEMU"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Kernel-File-Compilation"><span class="toc-number">1.</span> <span class="toc-text">Kernel File Compilation</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Download-the-kernal-file"><span class="toc-number">1.1.</span> <span class="toc-text">Download the kernal file</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Unzip-the-zipped-file"><span class="toc-number">1.2.</span> <span class="toc-text">Unzip the zipped file</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Download-the-necessary-binaries"><span class="toc-number">1.3.</span> <span class="toc-text">Download the necessary binaries</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Compile-the-kernel"><span class="toc-number">1.4.</span> <span class="toc-text">Compile the kernel</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Compilation-Result"><span class="toc-number">1.5.</span> <span class="toc-text">Compilation Result</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Possible-error"><span class="toc-number">1.6.</span> <span class="toc-text">Possible error</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Case-1"><span class="toc-number">1.6.1.</span> <span class="toc-text">Case 1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Case-2"><span class="toc-number">1.6.2.</span> <span class="toc-text">Case 2</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Case-3"><span class="toc-number">1.6.3.</span> <span class="toc-text">Case 3</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#QEMU"><span class="toc-number">2.</span> <span class="toc-text">QEMU</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#What-is-QEMU"><span class="toc-number">2.1.</span> <span class="toc-text">What is QEMU?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Install-QEMU"><span class="toc-number">2.2.</span> <span class="toc-text">Install QEMU</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#To-Use"><span class="toc-number">2.3.</span> <span class="toc-text">To Use</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Linux Kernel Compilation and QEMU
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Lothar</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-10-06T14:05:45.000Z" itemprop="datePublished">2022-10-06</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="Kernel-File-Compilation"><a href="#Kernel-File-Compilation" class="headerlink" title="Kernel File Compilation"></a>Kernel File Compilation</h2><h3 id="Download-the-kernal-file"><a href="#Download-the-kernal-file" class="headerlink" title="Download the kernal file"></a>Download the kernal file</h3><p>There should be a lot of mirror websites. </p>
+<p>Like this one: <a target="_blank" rel="noopener" href="https://mirrors.edge.kernel.org/pub/linux/kernel/">https://mirrors.edge.kernel.org/pub/linux/kernel/</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/linux-5.18.10.tar.gz</span></span><br></pre></td></tr></table></figure>
+
+<p>Or the Tsinghua mirror if in mainland China: <a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/kernel/">https://mirrors.tuna.tsinghua.edu.cn/kernel/</a></p>
+<h3 id="Unzip-the-zipped-file"><a href="#Unzip-the-zipped-file" class="headerlink" title="Unzip the zipped file"></a>Unzip the zipped file</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tar -xvf linux-5.18.10.tar.xz</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Download-the-necessary-binaries"><a href="#Download-the-necessary-binaries" class="headerlink" title="Download the necessary binaries"></a>Download the necessary binaries</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sudo apt-get install git fakeroot build-essential ncurses-dev xz-utils libssl-dev bc flex libelf-dev bison</span></span><br></pre></td></tr></table></figure>
+
+<p>Otherwise you may face a lot of errores because of the lack of binary.</p>
+<h3 id="Compile-the-kernel"><a href="#Compile-the-kernel" class="headerlink" title="Compile the kernel"></a>Compile the kernel</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> linux-5.18.10</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make menuconfig <span class="comment"># Configure it as you need</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make -j32</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make all</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make modules</span></span><br></pre></td></tr></table></figure>
+
+<img src="/images/image-20221006215827772.png" alt="image-20221006215827772" style="zoom:50%;" />
+
+<h3 id="Compilation-Result"><a href="#Compilation-Result" class="headerlink" title="Compilation Result"></a>Compilation Result</h3><p>After all these procedure, <code>bzImage</code> file could be found at <code>/arch/x86/boot/bzImage</code>.</p>
+<h3 id="Possible-error"><a href="#Possible-error" class="headerlink" title="Possible error"></a>Possible error</h3><h4 id="Case-1"><a href="#Case-1" class="headerlink" title="Case 1"></a>Case 1</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Your display is too small to run Menuconfig!</span><br><span class="line">It must be at least 19 lines by 80 columns.</span><br></pre></td></tr></table></figure>
+
+<p>This case, just as said, you could just resize the terminal to make it bigger. </p>
+<p>(This is a fun error that I have never such error before)</p>
+<h4 id="Case-2"><a href="#Case-2" class="headerlink" title="Case 2"></a>Case 2</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">No rule to make target &#x27;debian/canonical-certs.pem&#x27;, needed by &#x27;certs/x509_certificate_list&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>This case, modify the <code>.config</code> file. And change the following variables to empty.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CONFIG_SYSTEM_TRUSTED_KEYS=&#x27;&#x27;</span><br><span class="line">CONFIG_SYSTEM_REVOCATION_KEYS=&#x27;&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>Then can continue to <code>make all</code>.</p>
+<h4 id="Case-3"><a href="#Case-3" class="headerlink" title="Case 3"></a>Case 3</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">No enough space on the disk</span><br></pre></td></tr></table></figure>
+
+<p>I didn’t imagine that comling kernel is such a space-consuming thing. So the pre-allocated disk space totally runs out. </p>
+<p>This case, ask VMWare to allocate more disk space for the VM. Then use tools to make the newly added space available.</p>
+<p>May kindly refer to this <a target="_blank" rel="noopener" href="https://blog.csdn.net/kxh123456/article/details/121873296">https://blog.csdn.net/kxh123456/article/details/121873296</a></p>
+<h2 id="QEMU"><a href="#QEMU" class="headerlink" title="QEMU"></a>QEMU</h2><h3 id="What-is-QEMU"><a href="#What-is-QEMU" class="headerlink" title="What is QEMU?"></a>What is QEMU?</h3><p><a target="_blank" rel="noopener" href="https://www.qemu.org/">QEMU</a> is an open source machine emulator and virtualizer. I recognize it as a virtual machine software, like VMWare or VirtualBox. But its advantage is more about hardware virtualizaion.</p>
+<p>It works on the user layer of the local machine, which indicates that plenty of the privileged hardware and kernel instrucitons are not available. So it may perform poorly, and normally will cooperate with KVM to realize the virtualization.</p>
+<h3 id="Install-QEMU"><a href="#Install-QEMU" class="headerlink" title="Install QEMU"></a>Install QEMU</h3><p>There are two ways, with <code>apt install</code> or compile it yourself.</p>
+<p>The first method is preffered since it’s easier to implement and time saving.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">apt install qemu qemu-kvm</span></span><br></pre></td></tr></table></figure>
+
+<p>(After I tried both ways, I feel like nobody is gonna try the latter method unless he&#x2F;she is boring enough and have plenty of time and space…)</p>
+<h3 id="To-Use"><a href="#To-Use" class="headerlink" title="To Use"></a>To Use</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">qemu-system-x86_64</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/categories/">Writing</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="http://github.com/LotharShi">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Kernel-File-Compilation"><span class="toc-number">1.</span> <span class="toc-text">Kernel File Compilation</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Download-the-kernal-file"><span class="toc-number">1.1.</span> <span class="toc-text">Download the kernal file</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Unzip-the-zipped-file"><span class="toc-number">1.2.</span> <span class="toc-text">Unzip the zipped file</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Download-the-necessary-binaries"><span class="toc-number">1.3.</span> <span class="toc-text">Download the necessary binaries</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Compile-the-kernel"><span class="toc-number">1.4.</span> <span class="toc-text">Compile the kernel</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Compilation-Result"><span class="toc-number">1.5.</span> <span class="toc-text">Compilation Result</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Possible-error"><span class="toc-number">1.6.</span> <span class="toc-text">Possible error</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Case-1"><span class="toc-number">1.6.1.</span> <span class="toc-text">Case 1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Case-2"><span class="toc-number">1.6.2.</span> <span class="toc-text">Case 2</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Case-3"><span class="toc-number">1.6.3.</span> <span class="toc-text">Case 3</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#QEMU"><span class="toc-number">2.</span> <span class="toc-text">QEMU</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#What-is-QEMU"><span class="toc-number">2.1.</span> <span class="toc-text">What is QEMU?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Install-QEMU"><span class="toc-number">2.2.</span> <span class="toc-text">Install QEMU</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#To-Use"><span class="toc-number">2.3.</span> <span class="toc-text">To Use</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&text=Linux Kernel Compilation and QEMU"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&title=Linux Kernel Compilation and QEMU"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&is_video=false&description=Linux Kernel Compilation and QEMU"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Linux Kernel Compilation and QEMU&body=Check out this article: http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&title=Linux Kernel Compilation and QEMU"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&title=Linux Kernel Compilation and QEMU"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&title=Linux Kernel Compilation and QEMU"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&title=Linux Kernel Compilation and QEMU"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&name=Linux Kernel Compilation and QEMU&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://lotharshi.github.io/2022/10/06/Linux%20Kernel%20Compilation%20and%20QEMU/&t=Linux Kernel Compilation and QEMU"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022
+    Lothar
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/LotharShi">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJJPDKLTJM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RJJPDKLTJM');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

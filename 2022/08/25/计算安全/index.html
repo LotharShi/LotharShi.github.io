@@ -14,7 +14,7 @@
 <meta property="og:description" content="前言书本的第一章中介绍了大量的古典密码，而这些古典密码都已经全部被破解了，且因为没有严格的安全定义，无法证明安全性。因此在书本的第二章中引入了完美安全的定义，但是通过一次一密的方案可以得出，满足这种安全性定义的方案，其密钥空间$|\mathcal{K}| &gt; $明文空间$|\mathcal{M}|$，因此在现实生活中往往很难达到。 所以考虑到实际需求，书本给出了一种新的安全性定义，即计算安全">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2022-08-25T04:56:32.000Z">
-<meta property="article:modified_time" content="2022-09-05T06:39:29.727Z">
+<meta property="article:modified_time" content="2022-10-09T05:28:56.282Z">
 <meta property="article:author" content="Lothar">
 <meta name="twitter:card" content="summary">
     
@@ -119,7 +119,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E5%AE%89%E5%85%A8"><span class="toc-number">2.</span> <span class="toc-text">三种安全</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%8C%E7%BE%8E%E5%AE%89%E5%85%A8%E6%BB%A1%E8%B6%B3"><span class="toc-number">2.1.</span> <span class="toc-text">完美安全满足</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%9F%E8%AE%A1%E5%AE%89%E5%85%A8%E6%BB%A1%E8%B6%B3"><span class="toc-number">2.2.</span> <span class="toc-text">统计安全满足</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%AE%89%E5%85%A8%E6%BB%A1%E8%B6%B3"><span class="toc-number">2.3.</span> <span class="toc-text">计算安全满足</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%AE%89%E5%85%A8"><span class="toc-number">3.</span> <span class="toc-text">计算安全</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E6%96%B9%E6%B3%95"><span class="toc-number">3.1.</span> <span class="toc-text">具体方法</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-number">3.1.1.</span> <span class="toc-text">定义</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B8%90%E8%BF%9B%E6%96%B9%E6%B3%95"><span class="toc-number">3.2.</span> <span class="toc-text">渐进方法</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-1"><span class="toc-number">3.2.1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#PPT%E5%92%8CNegligible"><span class="toc-number">3.2.2.</span> <span class="toc-text">PPT和Negligible</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8D%E5%8F%AF%E5%8C%BA%E5%88%86"><span class="toc-number">3.3.</span> <span class="toc-text">不可区分</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AE%97%E5%8A%9B"><span class="toc-number">3.3.1.</span> <span class="toc-text">算力</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%94%BB%E7%A0%B4%E6%A6%82%E7%8E%87"><span class="toc-number">3.3.2.</span> <span class="toc-text">攻破概率</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#EAV-Security"><span class="toc-number">4.</span> <span class="toc-text">EAV-Security</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-2"><span class="toc-number">4.1.</span> <span class="toc-text">定义</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E5%AE%89%E5%85%A8"><span class="toc-number">2.</span> <span class="toc-text">三种安全</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%8C%E7%BE%8E%E5%AE%89%E5%85%A8%E6%BB%A1%E8%B6%B3"><span class="toc-number">2.1.</span> <span class="toc-text">完美安全满足</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%9F%E8%AE%A1%E5%AE%89%E5%85%A8%E6%BB%A1%E8%B6%B3"><span class="toc-number">2.2.</span> <span class="toc-text">统计安全满足</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%AE%89%E5%85%A8%E6%BB%A1%E8%B6%B3"><span class="toc-number">2.3.</span> <span class="toc-text">计算安全满足</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%AE%89%E5%85%A8"><span class="toc-number">3.</span> <span class="toc-text">计算安全</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E6%96%B9%E6%B3%95"><span class="toc-number">3.1.</span> <span class="toc-text">具体方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-number">3.2.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%90%E8%BF%9B%E6%96%B9%E6%B3%95"><span class="toc-number">3.3.</span> <span class="toc-text">渐进方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-1"><span class="toc-number">3.3.1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#PPT%E5%92%8CNegligible"><span class="toc-number">3.3.2.</span> <span class="toc-text">PPT和Negligible</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8D%E5%8F%AF%E5%8C%BA%E5%88%86"><span class="toc-number">3.3.3.</span> <span class="toc-text">不可区分</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AE%97%E5%8A%9B"><span class="toc-number">3.3.3.1.</span> <span class="toc-text">算力</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%94%BB%E7%A0%B4%E6%A6%82%E7%8E%87"><span class="toc-number">3.3.3.2.</span> <span class="toc-text">攻破概率</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EAV-Security"><span class="toc-number">4.</span> <span class="toc-text">EAV-Security</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-2"><span class="toc-number">4.1.</span> <span class="toc-text">定义</span></a></li></ol></li></ol>
     </div>
   </span>
 </div>
@@ -163,28 +163,28 @@
   
 
   <div class="content" itemprop="articleBody">
-    <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>书本的第一章中介绍了大量的古典密码，而这些古典密码都已经全部被破解了，且因为没有严格的安全定义，无法证明安全性。因此在书本的第二章中引入了完美安全的定义，但是通过一次一密的方案可以得出，满足这种安全性定义的方案，其密钥空间$|\mathcal{K}| &gt; $明文空间$|\mathcal{M}|$，因此在现实生活中往往很难达到。</p>
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>书本的第一章中介绍了大量的古典密码，而这些古典密码都已经全部被破解了，且因为没有严格的安全定义，无法证明安全性。因此在书本的第二章中引入了完美安全的定义，但是通过一次一密的方案可以得出，满足这种安全性定义的方案，其密钥空间$|\mathcal{K}| &gt; $明文空间$|\mathcal{M}|$，因此在现实生活中往往很难达到。</p>
 <p>所以考虑到实际需求，书本给出了一种新的安全性定义，即计算安全(Computational Security)，考虑有限算力的敌手和泄露明文信息的极小概率。</p>
-<h3 id="三种安全"><a href="#三种安全" class="headerlink" title="三种安全"></a>三种安全</h3><p>除了完美安全外，还有计算安全和统计安全。</p>
-<h4 id="完美安全满足"><a href="#完美安全满足" class="headerlink" title="完美安全满足"></a>完美安全满足</h4><ul>
+<h2 id="三种安全"><a href="#三种安全" class="headerlink" title="三种安全"></a>三种安全</h2><p>除了完美安全外，还有计算安全和统计安全。</p>
+<h3 id="完美安全满足"><a href="#完美安全满足" class="headerlink" title="完美安全满足"></a>完美安全满足</h3><ul>
 <li>无限算力的敌手</li>
 <li>不泄露丝毫明文信息</li>
 </ul>
-<h4 id="统计安全满足"><a href="#统计安全满足" class="headerlink" title="统计安全满足"></a>统计安全满足</h4><ul>
+<h3 id="统计安全满足"><a href="#统计安全满足" class="headerlink" title="统计安全满足"></a>统计安全满足</h3><ul>
 <li>无限算力的敌手</li>
 <li>极小概率泄露明文信息</li>
 </ul>
-<h4 id="计算安全满足"><a href="#计算安全满足" class="headerlink" title="计算安全满足"></a>计算安全满足</h4><ul>
+<h3 id="计算安全满足"><a href="#计算安全满足" class="headerlink" title="计算安全满足"></a>计算安全满足</h3><ul>
 <li>有限算力的敌手</li>
 <li>极小概率泄露明文信息</li>
 </ul>
-<h3 id="计算安全"><a href="#计算安全" class="headerlink" title="计算安全"></a>计算安全</h3><p>通过上面的对比也不难看出，计算安全可以被理解为是对完美安全的两个方面的一种放缩。对这种放缩书本上给出了两种方法，具体方法(Concrete Approach)和渐进方法(Asyptotic Approach)。</p>
-<h4 id="具体方法"><a href="#具体方法" class="headerlink" title="具体方法"></a>具体方法</h4><p><strong>用具体数值来进行表示。</strong></p>
-<h5 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h5><p>如果敌手运行时间最长为$t$，攻破密码方案的概率最多为$\epsilon$，则称该方案$(t,\epsilon) -$安全。</p>
-<h4 id="渐进方法"><a href="#渐进方法" class="headerlink" title="渐进方法"></a>渐进方法</h4><p><strong>引入一个安全参数，用关于该参数的函数来进行表示。</strong></p>
+<h2 id="计算安全"><a href="#计算安全" class="headerlink" title="计算安全"></a>计算安全</h2><p>通过上面的对比也不难看出，计算安全可以被理解为是对完美安全的两个方面的一种放缩。对这种放缩书本上给出了两种方法，具体方法(Concrete Approach)和渐进方法(Asyptotic Approach)。</p>
+<h3 id="具体方法"><a href="#具体方法" class="headerlink" title="具体方法"></a>具体方法</h3><p><strong>用具体数值来进行表示。</strong></p>
+<h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>如果敌手运行时间最长为$t$，攻破密码方案的概率最多为$\epsilon$，则称该方案$(t,\epsilon) -$安全。</p>
+<h3 id="渐进方法"><a href="#渐进方法" class="headerlink" title="渐进方法"></a>渐进方法</h3><p><strong>引入一个安全参数，用关于该参数的函数来进行表示。</strong></p>
 <p>相比于用具体的数值，使用函数和参数来定义安全性要更加mathematical，也更要严谨科学。因此引入一个安全参数$n$，使用关于$n$的函数来定义敌手算力和攻破概率。</p>
-<h5 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h5><p>如果运行时间为关于安全参数$n$的概率多项式函数(PPT, probabilistic polynomial time)，攻破密码方案的概率是可忽略的(negligible)，则称该方案是安全的。</p>
-<h5 id="PPT和Negligible"><a href="#PPT和Negligible" class="headerlink" title="PPT和Negligible"></a>PPT和Negligible</h5><p>一个算法$\mathcal{A}$满足下述条件则称为多项式时间算法(PPT)：存在一个多项式$p()$，对于任何输入$x \in {0,1}$，计算出$\mathcal{A}(x)$最多花费$p(|x|)$步。</p>
+<h4 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h4><p>如果运行时间为关于安全参数$n$的概率多项式函数(PPT, probabilistic polynomial time)，攻破密码方案的概率是可忽略的(negligible)，则称该方案是安全的。</p>
+<h4 id="PPT和Negligible"><a href="#PPT和Negligible" class="headerlink" title="PPT和Negligible"></a>PPT和Negligible</h4><p>一个算法$\mathcal{A}$满足下述条件则称为多项式时间算法(PPT)：存在一个多项式$p()$，对于任何输入$x \in {0,1}$，计算出$\mathcal{A}(x)$最多花费$p(|x|)$步。</p>
 <p>Negligible则是指对于任意多项式$p$，以及所有足够大的自然数$n$，函数$f$都满足$f(n) &lt; \frac{1}{p(n)}$。</p>
 <h4 id="不可区分"><a href="#不可区分" class="headerlink" title="不可区分"></a>不可区分</h4><p>在引入了安全参数$n$的情况下，计算安全中的不可区分和完美不可区分的区别可以表示如下：</p>
 <h5 id="算力"><a href="#算力" class="headerlink" title="算力"></a>算力</h5><ul>
@@ -195,7 +195,7 @@
 <li>完美不可区分：$Pr[PriK_{\mathcal{A},\Pi}^{eav}(n) &#x3D; 1] &#x3D; \frac{1}{2}$</li>
 <li>计算不可区分：$Pr[PriK_{\mathcal{A},\Pi}^{eav}(n) &#x3D; 1] \leq \frac{1}{2} + negl(n)$</li>
 </ul>
-<h3 id="EAV-Security"><a href="#EAV-Security" class="headerlink" title="EAV-Security"></a>EAV-Security</h3><h4 id="定义-2"><a href="#定义-2" class="headerlink" title="定义"></a>定义</h4><p>一个私钥加密的加密算法$\Pi$是EAV-Secure的，当其满足：对所有敌手PPT算法$\mathcal{A}$，都存在一个negl，使得$Pr[PriK_{\mathcal{A},\Pi}^{eav}(n) &#x3D; 1] \leq \frac{1}{2} + negl(n)$。</p>
+<h2 id="EAV-Security"><a href="#EAV-Security" class="headerlink" title="EAV-Security"></a>EAV-Security</h2><h3 id="定义-2"><a href="#定义-2" class="headerlink" title="定义"></a>定义</h3><p>一个私钥加密的加密算法$\Pi$是EAV-Secure的，当其满足：对所有敌手PPT算法$\mathcal{A}$，都存在一个negl，使得$Pr[PriK_{\mathcal{A},\Pi}^{eav}(n) &#x3D; 1] \leq \frac{1}{2} + negl(n)$。</p>
 <p><strong>实际上，EAV-Secure就是计算不可区分。</strong></p>
 <p>因为这个EAV的含义指的是有窃听者的存在(presence of an eavesdropper)，所以EAV-Secure在一些地方也被翻译为语义安全。</p>
 
@@ -223,7 +223,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E5%AE%89%E5%85%A8"><span class="toc-number">2.</span> <span class="toc-text">三种安全</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%8C%E7%BE%8E%E5%AE%89%E5%85%A8%E6%BB%A1%E8%B6%B3"><span class="toc-number">2.1.</span> <span class="toc-text">完美安全满足</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%9F%E8%AE%A1%E5%AE%89%E5%85%A8%E6%BB%A1%E8%B6%B3"><span class="toc-number">2.2.</span> <span class="toc-text">统计安全满足</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%AE%89%E5%85%A8%E6%BB%A1%E8%B6%B3"><span class="toc-number">2.3.</span> <span class="toc-text">计算安全满足</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%AE%89%E5%85%A8"><span class="toc-number">3.</span> <span class="toc-text">计算安全</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E6%96%B9%E6%B3%95"><span class="toc-number">3.1.</span> <span class="toc-text">具体方法</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-number">3.1.1.</span> <span class="toc-text">定义</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B8%90%E8%BF%9B%E6%96%B9%E6%B3%95"><span class="toc-number">3.2.</span> <span class="toc-text">渐进方法</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-1"><span class="toc-number">3.2.1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#PPT%E5%92%8CNegligible"><span class="toc-number">3.2.2.</span> <span class="toc-text">PPT和Negligible</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8D%E5%8F%AF%E5%8C%BA%E5%88%86"><span class="toc-number">3.3.</span> <span class="toc-text">不可区分</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AE%97%E5%8A%9B"><span class="toc-number">3.3.1.</span> <span class="toc-text">算力</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%94%BB%E7%A0%B4%E6%A6%82%E7%8E%87"><span class="toc-number">3.3.2.</span> <span class="toc-text">攻破概率</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#EAV-Security"><span class="toc-number">4.</span> <span class="toc-text">EAV-Security</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-2"><span class="toc-number">4.1.</span> <span class="toc-text">定义</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E5%AE%89%E5%85%A8"><span class="toc-number">2.</span> <span class="toc-text">三种安全</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%8C%E7%BE%8E%E5%AE%89%E5%85%A8%E6%BB%A1%E8%B6%B3"><span class="toc-number">2.1.</span> <span class="toc-text">完美安全满足</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%9F%E8%AE%A1%E5%AE%89%E5%85%A8%E6%BB%A1%E8%B6%B3"><span class="toc-number">2.2.</span> <span class="toc-text">统计安全满足</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%AE%89%E5%85%A8%E6%BB%A1%E8%B6%B3"><span class="toc-number">2.3.</span> <span class="toc-text">计算安全满足</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%AE%89%E5%85%A8"><span class="toc-number">3.</span> <span class="toc-text">计算安全</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E6%96%B9%E6%B3%95"><span class="toc-number">3.1.</span> <span class="toc-text">具体方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-number">3.2.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%90%E8%BF%9B%E6%96%B9%E6%B3%95"><span class="toc-number">3.3.</span> <span class="toc-text">渐进方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-1"><span class="toc-number">3.3.1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#PPT%E5%92%8CNegligible"><span class="toc-number">3.3.2.</span> <span class="toc-text">PPT和Negligible</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8D%E5%8F%AF%E5%8C%BA%E5%88%86"><span class="toc-number">3.3.3.</span> <span class="toc-text">不可区分</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AE%97%E5%8A%9B"><span class="toc-number">3.3.3.1.</span> <span class="toc-text">算力</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%94%BB%E7%A0%B4%E6%A6%82%E7%8E%87"><span class="toc-number">3.3.3.2.</span> <span class="toc-text">攻破概率</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EAV-Security"><span class="toc-number">4.</span> <span class="toc-text">EAV-Security</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-2"><span class="toc-number">4.1.</span> <span class="toc-text">定义</span></a></li></ol></li></ol>
     </div>
 
     <div id="share-footer" style="display: none">
@@ -325,6 +325,14 @@
 <!-- search -->
 
 <!-- Google Analytics -->
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJJPDKLTJM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RJJPDKLTJM');
+    </script>
 
 <!-- Baidu Analytics -->
 

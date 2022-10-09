@@ -15,7 +15,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://lotharshi.github.io/images/image-20220905153553662.png">
 <meta property="article:published_time" content="2022-09-05T07:17:32.000Z">
-<meta property="article:modified_time" content="2022-09-06T07:33:17.135Z">
+<meta property="article:modified_time" content="2022-10-09T05:29:41.745Z">
 <meta property="article:author" content="Lothar">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://lotharshi.github.io/images/image-20220905153553662.png">
@@ -121,7 +121,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#CPA%E5%AE%89%E5%85%A8"><span class="toc-number">1.</span> <span class="toc-text">CPA安全</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Oracle"><span class="toc-number">1.1.</span> <span class="toc-text">Oracle</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90"><span class="toc-number">1.2.</span> <span class="toc-text">例子</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%AB%E6%9C%89oracle%E7%9A%84%E6%95%8C%E6%89%8B%E6%B8%B8%E6%88%8F"><span class="toc-number">1.3.</span> <span class="toc-text">含有oracle的敌手游戏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CPA%E5%AE%89%E5%85%A8%E5%AE%9A%E4%B9%89"><span class="toc-number">1.4.</span> <span class="toc-text">CPA安全定义</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E6%AC%A1%E5%8A%A0%E5%AF%86"><span class="toc-number">2.</span> <span class="toc-text">多次加密</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Left-Right-Oracle"><span class="toc-number">2.1.</span> <span class="toc-text">Left-Right Oracle</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E6%AC%A1%E5%8A%A0%E5%AF%86%E5%92%8CCPA%E5%AE%89%E5%85%A8"><span class="toc-number">2.2.</span> <span class="toc-text">多次加密和CPA安全</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">3.</span> <span class="toc-text"></span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#CPA%E5%AE%89%E5%85%A8"><span class="toc-number">1.</span> <span class="toc-text">CPA安全</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Oracle"><span class="toc-number">1.1.</span> <span class="toc-text">Oracle</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90"><span class="toc-number">1.2.</span> <span class="toc-text">例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AB%E6%9C%89oracle%E7%9A%84%E6%95%8C%E6%89%8B%E6%B8%B8%E6%88%8F"><span class="toc-number">1.3.</span> <span class="toc-text">含有oracle的敌手游戏</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CPA%E5%AE%89%E5%85%A8%E5%AE%9A%E4%B9%89"><span class="toc-number">1.4.</span> <span class="toc-text">CPA安全定义</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E6%AC%A1%E5%8A%A0%E5%AF%86"><span class="toc-number">2.</span> <span class="toc-text">多次加密</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Left-Right-Oracle"><span class="toc-number">2.1.</span> <span class="toc-text">Left-Right Oracle</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E6%AC%A1%E5%8A%A0%E5%AF%86%E5%92%8CCPA%E5%AE%89%E5%85%A8"><span class="toc-number">2.2.</span> <span class="toc-text">多次加密和CPA安全</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">2.3.</span> <span class="toc-text"></span></a></li></ol></li></ol>
     </div>
   </span>
 </div>
@@ -165,15 +165,15 @@
   
 
   <div class="content" itemprop="articleBody">
-    <h3 id="CPA安全"><a href="#CPA安全" class="headerlink" title="CPA安全"></a>CPA安全</h3><h4 id="Oracle"><a href="#Oracle" class="headerlink" title="Oracle"></a>Oracle</h4><p>有这么一个网站<a target="_blank" rel="noopener" href="https://www.ucl.ac.uk/GrandLatMisc/oracle.html">Oracle</a>， 可以问Oracle一个问题，然后得到一个回答。而在密码学方案中，也可以有类似的情景，即攻击者可以选择明文$m$发送给加密者(这里就是Oracle)，加密者通过加密算法$Enc_k(m)$得到一个密文$c$，返回给攻击者。这个过程可以看作一次查询，而查询的内容是由攻击者定的，并可以进行任意多次，且每一次都用的是相同的密钥$k$。</p>
-<h4 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h4><p>参考教材上有一个例子我觉得很有意思也很便于理解：美日两军在中途岛海战中，美军监听到日军要攻击”AF”，但并不知道”AF”是哪里。美军猜测指的是中途岛，于是让中途岛故意发假消息说中途岛缺水，而日军了解到这个消息后发消息给总部说”AF 缺水了”，这就让美军知道了在日军的加密方案中”AF”指的是中途岛。这就是选择明文攻击。</p>
-<h4 id="含有oracle的敌手游戏"><a href="#含有oracle的敌手游戏" class="headerlink" title="含有oracle的敌手游戏"></a>含有oracle的敌手游戏</h4><p>如图所示：</p>
+    <h2 id="CPA安全"><a href="#CPA安全" class="headerlink" title="CPA安全"></a>CPA安全</h2><h3 id="Oracle"><a href="#Oracle" class="headerlink" title="Oracle"></a>Oracle</h3><p>有这么一个网站<a target="_blank" rel="noopener" href="https://www.ucl.ac.uk/GrandLatMisc/oracle.html">Oracle</a>， 可以问Oracle一个问题，然后得到一个回答。而在密码学方案中，也可以有类似的情景，即攻击者可以选择明文$m$发送给加密者(这里就是Oracle)，加密者通过加密算法$Enc_k(m)$得到一个密文$c$，返回给攻击者。这个过程可以看作一次查询，而查询的内容是由攻击者定的，并可以进行任意多次，且每一次都用的是相同的密钥$k$。</p>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><p>参考教材上有一个例子我觉得很有意思也很便于理解：美日两军在中途岛海战中，美军监听到日军要攻击”AF”，但并不知道”AF”是哪里。美军猜测指的是中途岛，于是让中途岛故意发假消息说中途岛缺水，而日军了解到这个消息后发消息给总部说”AF 缺水了”，这就让美军知道了在日军的加密方案中”AF”指的是中途岛。这就是选择明文攻击。</p>
+<h3 id="含有oracle的敌手游戏"><a href="#含有oracle的敌手游戏" class="headerlink" title="含有oracle的敌手游戏"></a>含有oracle的敌手游戏</h3><p>如图所示：</p>
 <p><img src="/images/image-20220905153553662.png" alt="image-20220905153553662"></p>
 <p>在这个游戏中，挑战者生成一个密钥$k$，敌手可以多次使用Oracle $Enc_k(m)$并且可以选择$m_0$和$m_1$。挑战者选择一个$b$，并计算$C &#x3D; Enc_k(m_b)$。敌手可以获得$C$并可以继续使用Oracle来猜测，猜测结果记为$b’$，如果$b’ &#x3D; b$，则输出1，否则输出0。</p>
-<h4 id="CPA安全定义"><a href="#CPA安全定义" class="headerlink" title="CPA安全定义"></a>CPA安全定义</h4><p>一个加密算法$\Pi$在满足以下要求时，是面对选择明文攻击而不可区分的加密算法(即是CPA-secure的)：对任意敌手$\mathcal{A}$，都有一个可忽略函数negl，使得$Pr[PrivK_{\mathcal{A},\Pi}^{cpa}(n) &#x3D; 1] \leq \frac{1}{2} + negl(n)$。</p>
-<h3 id="多次加密"><a href="#多次加密" class="headerlink" title="多次加密"></a>多次加密</h3><h4 id="Left-Right-Oracle"><a href="#Left-Right-Oracle" class="headerlink" title="Left-Right Oracle"></a>Left-Right Oracle</h4><p>攻击者输入等长明文$m_0$, $m_1$给$LR_{k,b}(·,·)$，如果$b$为0则输出$c &#x3D; Enc_k(m_0)$，如果$b$为1则输出$c &#x3D; Enc_k(m_1)$。</p>
+<h3 id="CPA安全定义"><a href="#CPA安全定义" class="headerlink" title="CPA安全定义"></a>CPA安全定义</h3><p>一个加密算法$\Pi$在满足以下要求时，是面对选择明文攻击而不可区分的加密算法(即是CPA-secure的)：对任意敌手$\mathcal{A}$，都有一个可忽略函数negl，使得$Pr[PrivK_{\mathcal{A},\Pi}^{cpa}(n) &#x3D; 1] \leq \frac{1}{2} + negl(n)$。</p>
+<h2 id="多次加密"><a href="#多次加密" class="headerlink" title="多次加密"></a>多次加密</h2><h3 id="Left-Right-Oracle"><a href="#Left-Right-Oracle" class="headerlink" title="Left-Right Oracle"></a>Left-Right Oracle</h3><p>攻击者输入等长明文$m_0$, $m_1$给$LR_{k,b}(·,·)$，如果$b$为0则输出$c &#x3D; Enc_k(m_0)$，如果$b$为1则输出$c &#x3D; Enc_k(m_1)$。</p>
 <p>其中，$k$和$b$是提前决定好的。</p>
-<h4 id="多次加密和CPA安全"><a href="#多次加密和CPA安全" class="headerlink" title="多次加密和CPA安全"></a>多次加密和CPA安全</h4><p>一个加密方案$\Pi$​在满足以下要求时，是面对选择明文攻击而不可区分多次加密的加密算法(即是对多次加密而CPA-secure的)：对任意敌手$\mathcal{A}$​，都有一个可忽略函数negl，使得$Pr[PrivK_{\mathcal{A},\Pi}^{LR-cpa}(n) &#x3D; 1] \leq \frac{1}{2} + negl(n)$。</p>
+<h3 id="多次加密和CPA安全"><a href="#多次加密和CPA安全" class="headerlink" title="多次加密和CPA安全"></a>多次加密和CPA安全</h3><p>一个加密方案$\Pi$​在满足以下要求时，是面对选择明文攻击而不可区分多次加密的加密算法(即是对多次加密而CPA-secure的)：对任意敌手$\mathcal{A}$​，都有一个可忽略函数negl，使得$Pr[PrivK_{\mathcal{A},\Pi}^{LR-cpa}(n) &#x3D; 1] \leq \frac{1}{2} + negl(n)$。</p>
 <h3 id=""><a href="#" class="headerlink" title=""></a></h3>
   </div>
 </article>
@@ -199,7 +199,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#CPA%E5%AE%89%E5%85%A8"><span class="toc-number">1.</span> <span class="toc-text">CPA安全</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Oracle"><span class="toc-number">1.1.</span> <span class="toc-text">Oracle</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90"><span class="toc-number">1.2.</span> <span class="toc-text">例子</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%AB%E6%9C%89oracle%E7%9A%84%E6%95%8C%E6%89%8B%E6%B8%B8%E6%88%8F"><span class="toc-number">1.3.</span> <span class="toc-text">含有oracle的敌手游戏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CPA%E5%AE%89%E5%85%A8%E5%AE%9A%E4%B9%89"><span class="toc-number">1.4.</span> <span class="toc-text">CPA安全定义</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E6%AC%A1%E5%8A%A0%E5%AF%86"><span class="toc-number">2.</span> <span class="toc-text">多次加密</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Left-Right-Oracle"><span class="toc-number">2.1.</span> <span class="toc-text">Left-Right Oracle</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E6%AC%A1%E5%8A%A0%E5%AF%86%E5%92%8CCPA%E5%AE%89%E5%85%A8"><span class="toc-number">2.2.</span> <span class="toc-text">多次加密和CPA安全</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">3.</span> <span class="toc-text"></span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#CPA%E5%AE%89%E5%85%A8"><span class="toc-number">1.</span> <span class="toc-text">CPA安全</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Oracle"><span class="toc-number">1.1.</span> <span class="toc-text">Oracle</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90"><span class="toc-number">1.2.</span> <span class="toc-text">例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AB%E6%9C%89oracle%E7%9A%84%E6%95%8C%E6%89%8B%E6%B8%B8%E6%88%8F"><span class="toc-number">1.3.</span> <span class="toc-text">含有oracle的敌手游戏</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CPA%E5%AE%89%E5%85%A8%E5%AE%9A%E4%B9%89"><span class="toc-number">1.4.</span> <span class="toc-text">CPA安全定义</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E6%AC%A1%E5%8A%A0%E5%AF%86"><span class="toc-number">2.</span> <span class="toc-text">多次加密</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Left-Right-Oracle"><span class="toc-number">2.1.</span> <span class="toc-text">Left-Right Oracle</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E6%AC%A1%E5%8A%A0%E5%AF%86%E5%92%8CCPA%E5%AE%89%E5%85%A8"><span class="toc-number">2.2.</span> <span class="toc-text">多次加密和CPA安全</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">2.3.</span> <span class="toc-text"></span></a></li></ol></li></ol>
     </div>
 
     <div id="share-footer" style="display: none">
@@ -301,6 +301,14 @@
 <!-- search -->
 
 <!-- Google Analytics -->
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJJPDKLTJM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RJJPDKLTJM');
+    </script>
 
 <!-- Baidu Analytics -->
 

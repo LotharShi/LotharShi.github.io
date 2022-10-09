@@ -15,7 +15,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://lotharshi.github.io/images/image-20220905145723955.png">
 <meta property="article:published_time" content="2022-09-05T06:42:31.000Z">
-<meta property="article:modified_time" content="2022-09-06T07:33:32.131Z">
+<meta property="article:modified_time" content="2022-10-09T05:27:52.791Z">
 <meta property="article:author" content="Lothar">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://lotharshi.github.io/images/image-20220905145723955.png">
@@ -121,7 +121,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%AA%E9%9A%8F%E6%9C%BA%E7%94%9F%E6%88%90%E5%99%A8-PRG"><span class="toc-number">1.</span> <span class="toc-text">伪随机生成器(PRG)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-number">1.1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%84%E9%80%A0"><span class="toc-number">1.2.</span> <span class="toc-text">构造</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">定理</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%AA%E9%9A%8F%E6%9C%BA%E7%94%9F%E6%88%90%E5%99%A8-PRG"><span class="toc-number">1.</span> <span class="toc-text">伪随机生成器(PRG)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-number">1.1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E9%80%A0"><span class="toc-number">1.2.</span> <span class="toc-text">构造</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">定理</span></a></li></ol></li></ol>
     </div>
   </span>
 </div>
@@ -165,19 +165,19 @@
   
 
   <div class="content" itemprop="articleBody">
-    <h3 id="伪随机生成器-PRG"><a href="#伪随机生成器-PRG" class="headerlink" title="伪随机生成器(PRG)"></a>伪随机生成器(PRG)</h3><p>伪随机生成器(Pseudo-Random Generatior)的出现其实是一种必然，<strong>因为生成真随机是很难而且速度较慢的</strong>。通过前面进行计算安全和完美安全以及计算不可区分和完美不可区分的学习后，在这里也不难想到，是否也可以采用一种放缩的方法来处理随机这件事。所以有了伪随机。</p>
+    <h2 id="伪随机生成器-PRG"><a href="#伪随机生成器-PRG" class="headerlink" title="伪随机生成器(PRG)"></a>伪随机生成器(PRG)</h2><p>伪随机生成器(Pseudo-Random Generatior)的出现其实是一种必然，<strong>因为生成真随机是很难而且速度较慢的</strong>。通过前面进行计算安全和完美安全以及计算不可区分和完美不可区分的学习后，在这里也不难想到，是否也可以采用一种放缩的方法来处理随机这件事。所以有了伪随机。</p>
 <p>其生成过程是使用“短的、均匀的”字符串(也称为seed)来生成一个“长的、看起来均匀的”字符串。</p>
 <p><img src="/images/image-20220905145723955.png" alt="image-20220905145723955"></p>
-<h4 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h4><p>$G$是一个确定性多项式算法(Deterministic polytime)，如果其满足以下两点，则可称为是一个PRG：</p>
+<h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>$G$是一个确定性多项式算法(Deterministic polytime)，如果其满足以下两点，则可称为是一个PRG：</p>
 <ol>
 <li><strong>扩展性</strong> - 输出的长度比输入(seed)的长度要长；</li>
 <li><strong>伪随机性</strong> - 对任何PPT敌手D，都有一个可忽略函数negl使得$|Pr[D(G(s)) &#x3D; 1] - Pr[D(r) &#x3D; 1| \leq negl(n)]$。</li>
 </ol>
-<h4 id="构造"><a href="#构造" class="headerlink" title="构造"></a>构造</h4><p>如果$G$是一个PRG，定义一个对于信息长度为$l$的私钥加密方案如下：</p>
+<h3 id="构造"><a href="#构造" class="headerlink" title="构造"></a>构造</h3><p>如果$G$是一个PRG，定义一个对于信息长度为$l$的私钥加密方案如下：</p>
 <p>$Gen:$ 对于输入$1^n$，选择均匀的$k \in {0,1}^n$ 作为key输出；</p>
 <p>$Enc:$ 输入key和信息$m \in {0,1}^{l(n)}$，输出密文 $c :&#x3D; G(k) \oplus m$；</p>
 <p>$Dec:$ 输入key和密文$c \in {0,1}^{l(n)}$,  输出信息 $m :&#x3D; G(k) \oplus c$。</p>
-<h4 id="定理"><a href="#定理" class="headerlink" title="定理"></a>定理</h4><p>如果$G$是一个PRG，则上述构造是一个定长私钥加密方案，其在有窃听者时实现了不可区分，即其满足EAV-Secure。</p>
+<h3 id="定理"><a href="#定理" class="headerlink" title="定理"></a>定理</h3><p>如果$G$是一个PRG，则上述构造是一个定长私钥加密方案，其在有窃听者时实现了不可区分，即其满足EAV-Secure。</p>
 
   </div>
 </article>
@@ -203,7 +203,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%AA%E9%9A%8F%E6%9C%BA%E7%94%9F%E6%88%90%E5%99%A8-PRG"><span class="toc-number">1.</span> <span class="toc-text">伪随机生成器(PRG)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-number">1.1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%84%E9%80%A0"><span class="toc-number">1.2.</span> <span class="toc-text">构造</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">定理</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%AA%E9%9A%8F%E6%9C%BA%E7%94%9F%E6%88%90%E5%99%A8-PRG"><span class="toc-number">1.</span> <span class="toc-text">伪随机生成器(PRG)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-number">1.1.</span> <span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E9%80%A0"><span class="toc-number">1.2.</span> <span class="toc-text">构造</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">定理</span></a></li></ol></li></ol>
     </div>
 
     <div id="share-footer" style="display: none">
@@ -305,6 +305,14 @@
 <!-- search -->
 
 <!-- Google Analytics -->
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJJPDKLTJM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RJJPDKLTJM');
+    </script>
 
 <!-- Baidu Analytics -->
 
