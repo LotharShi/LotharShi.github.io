@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="JNDIWhat is JNDIBasically, JNDI is  Java Naming and Directory Interface. It is actually an Interface as suggested from the name, and the meaning of Naming and Dirctory could be found in the offical do">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JNDI Injection">
+<meta property="og:url" content="http://lotharshi.github.io/2022/10/21/JNDI%20Injection/index.html">
+<meta property="og:site_name" content="Where Lothar Write Blogs">
+<meta property="og:description" content="JNDIWhat is JNDIBasically, JNDI is  Java Naming and Directory Interface. It is actually an Interface as suggested from the name, and the meaning of Naming and Dirctory could be found in the offical do">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-10-21T08:29:33.000Z">
+<meta property="article:modified_time" content="2022-10-23T06:41:49.225Z">
+<meta property="article:author" content="Lothar">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>JNDI Injection</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/LotharShi">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2022/10/13/Failmalloc/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&text=JNDI Injection"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&title=JNDI Injection"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&is_video=false&description=JNDI Injection"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=JNDI Injection&body=Check out this article: http://lotharshi.github.io/2022/10/21/JNDI%20Injection/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&title=JNDI Injection"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&title=JNDI Injection"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&title=JNDI Injection"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&title=JNDI Injection"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&name=JNDI Injection&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&t=JNDI Injection"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JNDI"><span class="toc-number">1.</span> <span class="toc-text">JNDI</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#What-is-JNDI"><span class="toc-number">1.1.</span> <span class="toc-text">What is JNDI</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Naming"><span class="toc-number">1.2.</span> <span class="toc-text">Naming</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Bindings"><span class="toc-number">1.2.1.</span> <span class="toc-text">Bindings</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Context"><span class="toc-number">1.2.2.</span> <span class="toc-text">Context</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Reference"><span class="toc-number">1.2.3.</span> <span class="toc-text">Reference</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Directory"><span class="toc-number">1.3.</span> <span class="toc-text">Directory</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#APIs-for-JNDI"><span class="toc-number">1.4.</span> <span class="toc-text">APIs for JNDI</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JNDI-Injection"><span class="toc-number">2.</span> <span class="toc-text">JNDI Injection</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Normally"><span class="toc-number">2.1.</span> <span class="toc-text">Normally</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Injection"><span class="toc-number">2.2.</span> <span class="toc-text">Injection</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Exploitation"><span class="toc-number">3.</span> <span class="toc-text">Exploitation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference-1"><span class="toc-number">4.</span> <span class="toc-text">Reference</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        JNDI Injection
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Lothar</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-10-21T08:29:33.000Z" itemprop="datePublished">2022-10-21</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="JNDI"><a href="#JNDI" class="headerlink" title="JNDI"></a>JNDI</h2><h3 id="What-is-JNDI"><a href="#What-is-JNDI" class="headerlink" title="What is JNDI"></a>What is JNDI</h3><p>Basically, <strong>JNDI</strong> is  <strong>Java Naming and Directory Interface</strong>. It is actually an Interface as suggested from the name, and the meaning of <code>Naming</code> and <code>Dirctory</code> could be found in the offical documentations.</p>
+<h3 id="Naming"><a href="#Naming" class="headerlink" title="Naming"></a>Naming</h3><p>Mostly, <code>Naming</code> is used together with <code>Naming Service</code>. And this service could be easily described as <strong>the service that use name to look up actual objects</strong>.</p>
+<p>Usually we lookup concrete objects according to the naming rules defined by the naming system. For instance, in the UNIX file system, the rule is to start with the root directory and look up the subdirectory through layers seperated by <code>/</code>. </p>
+<p>LDAP (<a target="_blank" rel="noopener" href="http://www.ietf.org/rfc/rfc2251.txt">Lightweight Directory Access Protocol</a>) is also a naming service which is worth mentioning. The name is defined from the right to the left, and the layers are seperated by <code>,</code>. </p>
+<p>There are some important comcepts here:</p>
+<h4 id="Bindings"><a href="#Bindings" class="headerlink" title="Bindings"></a>Bindings</h4><p>It indicates the correspondence between a name and the corresponding object. Like in the file system, a file name is binding to the specific file. </p>
+<h4 id="Context"><a href="#Context" class="headerlink" title="Context"></a>Context</h4><p>It indicates a group of bindings. In the file system, a directory is a context, where we could find files inside it. And also similarly, subdirectories could be subcontexts.</p>
+<h4 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h4><p>In the actual Naming Service, some objects may not be able to be stored directly in the system. Then they will be stored as reference, just like the pointer in C. </p>
+<h3 id="Directory"><a href="#Directory" class="headerlink" title="Directory"></a>Directory</h3><p>Directory or Directory Service, could be regarded as a expansion of the Naming Service. It allows the objects to have <strong>attributes</strong>. Thus, users could not only look up objects based on names, but also could search objects based on attributes.</p>
+<h3 id="APIs-for-JNDI"><a href="#APIs-for-JNDI" class="headerlink" title="APIs for JNDI"></a>APIs for JNDI</h3><p>The JNDI APIs in Java is mainly divided as following :</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/jndi/tutorial/getStarted/overview/naming.html">javax.naming</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/jndi/tutorial/getStarted/overview/directory.html">javax.naming.directory</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/jndi/tutorial/getStarted/overview/event.html">javax.naming.event</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/jndi/tutorial/getStarted/overview/ldap.html">javax.naming.ldap</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/jndi/tutorial/getStarted/overview/provider.html">javax.naming.spi</a></li>
+</ul>
+<p><code>javax.naming</code> could be the most important one among them, since it includes the needed classes and interfaces for using the directory service.</p>
+<h2 id="JNDI-Injection"><a href="#JNDI-Injection" class="headerlink" title="JNDI Injection"></a>JNDI Injection</h2><h3 id="Normally"><a href="#Normally" class="headerlink" title="Normally"></a>Normally</h3><p>Let’s see a simple client program at the beginning, which uses JNDI interfaces to look up the DNS service.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// DNSClient.java</span></span><br><span class="line"><span class="keyword">import</span> javax.naming.Context;</span><br><span class="line"><span class="keyword">import</span> javax.naming.NamingException;</span><br><span class="line"><span class="keyword">import</span> javax.naming.directory.*;</span><br><span class="line"><span class="keyword">import</span> java.util.Hashtable;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DNSClient</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        Hashtable&lt;String, String&gt; env = <span class="keyword">new</span> <span class="title class_">Hashtable</span>&lt;&gt;();</span><br><span class="line">        env.put(Context.INITIAL_CONTEXT_FACTORY, <span class="string">&quot;com.sun.jndi.dns.DnsContextFactory&quot;</span>);</span><br><span class="line">        env.put(Context.PROVIDER_URL, <span class="string">&quot;dns://114.114.114.114&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">DirContext</span> <span class="variable">ctx</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">InitialDirContext</span>(env);</span><br><span class="line">            <span class="type">Attributes</span> <span class="variable">res</span> <span class="operator">=</span> ctx.getAttributes(<span class="string">&quot;example.com&quot;</span>, <span class="keyword">new</span> <span class="title class_">String</span>[] &#123;<span class="string">&quot;A&quot;</span>&#125;);</span><br><span class="line">            System.out.println(res);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NamingException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Compile and see the output:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">javac DNSClient.java</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">java DNSClient</span></span><br><span class="line">&#123;a=A: 93.184.216.34&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Injection"><a href="#Injection" class="headerlink" title="Injection"></a>Injection</h3><p>At the normal situation, the lookup protocol is defined. But in the parameters of <code>Context.lookup</code>, it could be assigned by the user itself.</p>
+<p>And this made the Injection possible: By intentionally modify the return value of the server side, we could let the Client who request for lookup parse and execute the remote commands.</p>
+<h2 id="Exploitation"><a href="#Exploitation" class="headerlink" title="Exploitation"></a>Exploitation</h2><p>The Attacking Interface varies according to different JNDI services. For example, the one of RMI, LDAP and CORBA are quite different. More Examples could be found at the reference page.</p>
+<h2 id="Reference-1"><a href="#Reference-1" class="headerlink" title="Reference"></a>Reference</h2><p><a target="_blank" rel="noopener" href="https://evilpan.com/2021/12/13/jndi-injection/">JNDI 注入漏洞的前世今生</a></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/categories/">Writing</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="http://github.com/LotharShi">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JNDI"><span class="toc-number">1.</span> <span class="toc-text">JNDI</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#What-is-JNDI"><span class="toc-number">1.1.</span> <span class="toc-text">What is JNDI</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Naming"><span class="toc-number">1.2.</span> <span class="toc-text">Naming</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Bindings"><span class="toc-number">1.2.1.</span> <span class="toc-text">Bindings</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Context"><span class="toc-number">1.2.2.</span> <span class="toc-text">Context</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Reference"><span class="toc-number">1.2.3.</span> <span class="toc-text">Reference</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Directory"><span class="toc-number">1.3.</span> <span class="toc-text">Directory</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#APIs-for-JNDI"><span class="toc-number">1.4.</span> <span class="toc-text">APIs for JNDI</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JNDI-Injection"><span class="toc-number">2.</span> <span class="toc-text">JNDI Injection</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Normally"><span class="toc-number">2.1.</span> <span class="toc-text">Normally</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Injection"><span class="toc-number">2.2.</span> <span class="toc-text">Injection</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Exploitation"><span class="toc-number">3.</span> <span class="toc-text">Exploitation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference-1"><span class="toc-number">4.</span> <span class="toc-text">Reference</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&text=JNDI Injection"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&title=JNDI Injection"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&is_video=false&description=JNDI Injection"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=JNDI Injection&body=Check out this article: http://lotharshi.github.io/2022/10/21/JNDI%20Injection/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&title=JNDI Injection"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&title=JNDI Injection"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&title=JNDI Injection"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&title=JNDI Injection"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&name=JNDI Injection&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://lotharshi.github.io/2022/10/21/JNDI%20Injection/&t=JNDI Injection"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022
+    Lothar
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/LotharShi">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJJPDKLTJM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RJJPDKLTJM');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
