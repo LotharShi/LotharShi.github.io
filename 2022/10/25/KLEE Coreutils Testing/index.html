@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="KLEEIntroductionTo identify what KLEE is, the official explanation could be the best way.  KLEE is a dynamic symbolic execution engine built on top of the LLVM compiler infrastructure, and available u">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KLEE Coreutils Testing">
+<meta property="og:url" content="http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/index.html">
+<meta property="og:site_name" content="Where Lothar Write Blogs">
+<meta property="og:description" content="KLEEIntroductionTo identify what KLEE is, the official explanation could be the best way.  KLEE is a dynamic symbolic execution engine built on top of the LLVM compiler infrastructure, and available u">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://lotharshi.github.io/images/image-20221031160807032.png">
+<meta property="og:image" content="http://lotharshi.github.io/Users/todd/Library/Application%20Support/typora-user-images/image-20221031170201308.png">
+<meta property="article:published_time" content="2022-10-25T08:54:32.000Z">
+<meta property="article:modified_time" content="2022-10-31T09:13:26.734Z">
+<meta property="article:author" content="Lothar">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lotharshi.github.io/images/image-20221031160807032.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>KLEE Coreutils Testing</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/LotharShi">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2022/10/21/JNDI%20Injection/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&text=KLEE Coreutils Testing"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&title=KLEE Coreutils Testing"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&is_video=false&description=KLEE Coreutils Testing"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=KLEE Coreutils Testing&body=Check out this article: http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&title=KLEE Coreutils Testing"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&title=KLEE Coreutils Testing"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&title=KLEE Coreutils Testing"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&title=KLEE Coreutils Testing"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&name=KLEE Coreutils Testing&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&t=KLEE Coreutils Testing"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#KLEE"><span class="toc-number">1.</span> <span class="toc-text">KLEE</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Introduction"><span class="toc-number">1.1.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Symbolic-Execution"><span class="toc-number">1.2.</span> <span class="toc-text">Symbolic Execution</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Use-KLEE-to-Test-Coreutils"><span class="toc-number">2.</span> <span class="toc-text">Use KLEE to Test Coreutils</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Build-Coreutils-with-Sanitizers"><span class="toc-number">2.1.</span> <span class="toc-text">Build Coreutils with Sanitizers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Use-sanitizers-to-check-the-vulnerability"><span class="toc-number">2.2.</span> <span class="toc-text">Use sanitizers to check the vulnerability</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Use-KLEE"><span class="toc-number">2.3.</span> <span class="toc-text">Use KLEE</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Compare-the-result"><span class="toc-number">2.4.</span> <span class="toc-text">Compare the result</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Appendix"><span class="toc-number">3.</span> <span class="toc-text">Appendix</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        KLEE Coreutils Testing
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Lothar</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-10-25T08:54:32.000Z" itemprop="datePublished">2022-10-25</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/Linux/">Linux</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="KLEE"><a href="#KLEE" class="headerlink" title="KLEE"></a>KLEE</h2><h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>To identify what KLEE is, the official explanation could be the best way.</p>
+<blockquote>
+<p>KLEE is a dynamic symbolic execution engine built on top of the <a target="_blank" rel="noopener" href="http://llvm.org/">LLVM</a> compiler infrastructure, and available under the UIUC open source license. </p>
+</blockquote>
+<p>It is proposed by the paper <a target="_blank" rel="noopener" href="https://www.usenix.org/legacy/event/osdi08/tech/full_papers/cadar/cadar.pdf">“KLEE: Unassisted and Automatic Generation of High-Coverage Tests for Complex Systems Programs”</a>, and more information on what KLEE is and what it can do could be found inside the original KLEE paper. </p>
+<p>Up to this article is written, the KLEE paper has been cited 3744 times. And there are plenty of new ideas and projects based on KLEE. </p>
+<h3 id="Symbolic-Execution"><a href="#Symbolic-Execution" class="headerlink" title="Symbolic Execution"></a>Symbolic Execution</h3><p>You may wonder what does the “Symbolic Execution” mentioned in the previous part means. The defination could be,  it is a way of executing a program abstractly, so that one abstract execution covers multiple possible inputs of the program that share a particular execution path through the code.</p>
+<p>Let me explain it with an example:</p>
+<img src="/images/image-20221031160807032.png" alt="image-20221031160807032" style="zoom:50%;" />
+
+<p>DART stands for Directed Automated Random Testing, and it’s presented by the paper “<a target="_blank" rel="noopener" href="https://web.eecs.umich.edu/~weimerw/590/reading/p213-godefroid.pdf">DART: Directed Automated Random Testing</a>“. Most of the time we are talking about Symbolic Execution, it’s nice to compare it with Concrete Execution, which could be considered as the opposite. You can tell the difference directly from the figure. The concrete states indicate that the variables have different exact number as their values, while symbolic ones indicate that they have only abstract values. </p>
+<p>In such format, using abstract values to execute one path could subtitute plenty of concrete values executing the same path. And this obviously save the time and computation power.</p>
+<h2 id="Use-KLEE-to-Test-Coreutils"><a href="#Use-KLEE-to-Test-Coreutils" class="headerlink" title="Use KLEE to Test Coreutils"></a>Use KLEE to Test Coreutils</h2><p>Basically, this experiment is an official example of KLEE usage, and it’s exactly the example in the KLEE paper. Also, I think most blogs articles searched by Google or Baidu are all talking about this experiment, but the ones I’ve seen are just translating or paraphrasing the official one.</p>
+<p>You may found the official tutorial <a target="_blank" rel="noopener" href="https://klee.github.io/tutorials/testing-coreutils/">here</a>. </p>
+<p>The previous steps will be ignored here, since this part in the tutorial is quite clear. You install LLVM, build Coreutils with LLVM and tries a little bit of klee testing. </p>
+<p>But it’s not enough. Let’s try more.</p>
+<h3 id="Build-Coreutils-with-Sanitizers"><a href="#Build-Coreutils-with-Sanitizers" class="headerlink" title="Build Coreutils with Sanitizers"></a>Build Coreutils with Sanitizers</h3><p>Unlike the tutorial, The version pf Coreutils I’m testing is 6.10. And there are 10 known vulnerable binaries (we know this because we are from the “future”). Here are the commands to trigger the vulnerability. </p>
+<ol>
+<li><p>paste -d\ bcdefghijklmnopqrstuvwxyz</p>
+</li>
+<li><p>ptx x file.txt (with file content “a”)</p>
+</li>
+<li><p>pr -e file.txt (with file content “\b\b\b\b\b\b\b\t”)</p>
+</li>
+<li><p>tac -r file.txt file.txt (with file content “\n”)</p>
+</li>
+<li><p>mkdir -Z a b</p>
+</li>
+<li><p>mkfifo -Z a b</p>
+</li>
+<li><p>mknod -Z a b p</p>
+</li>
+<li><p>md5sum -c file.txt (with file content “\t \tMD5 (“)</p>
+</li>
+<li><p>ptx -F\ abcdefghijklmnopqrstuvwxyz</p>
+</li>
+<li><p>seq -f %0 1</p>
+</li>
+</ol>
+<h3 id="Use-sanitizers-to-check-the-vulnerability"><a href="#Use-sanitizers-to-check-the-vulnerability" class="headerlink" title="Use sanitizers to check the vulnerability"></a>Use sanitizers to check the vulnerability</h3><p>Sanitizers are some error checker, which are used in the process of compilation and execution of binaries. The ones we are using are ASAN, UBSAN, and Valgrind.</p>
+<p>To use ASAN, we should compile the coreutils with ASAN options.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir coreutils-6.10/obj-asan</span><br><span class="line">cd coreutils-6.10/obj-asan</span><br><span class="line">clang ../configure --disable-nls CFLAGS=&quot;-g -O0&quot; -fsanitize=address -fsanitize recover=address,all -fno-omit-frame-pointer -fsanitize=leak </span><br><span class="line">make -j $(nproc)</span><br></pre></td></tr></table></figure>
+
+<p>And to use UBSAN:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir coreutils-6.10/obj-ubsan</span><br><span class="line">cd coreutils-6.10/obj-ubsan</span><br><span class="line">clang ../configure --disable-nls CFLAGS=&quot;-g -O0&quot; -fsanitize=undefined </span><br><span class="line">make -j $(nproc)</span><br></pre></td></tr></table></figure>
+
+<p>We take ASAN and the vulnerable <code>paste</code> as example.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd coreutils-6.10/obj-asan/src</span><br><span class="line">./paste -d\\ bcdefghijklmnopqrstuvwxyz</span><br></pre></td></tr></table></figure>
+
+<p>(IMPORTANT: Do remember do use .&#x2F;paste instead of simply paste. Because otherwise you will use the normal paste which is 99.9% not vulnerable)</p>
+<p>Then we can see the output:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">=================================================================</span><br><span class="line">==38066==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x602000000012 at pc 0x0000005131e2 bp 0x7ffd8b02ba10 sp 0x7ffd8b02ba08</span><br><span class="line">WRITE of size 1 at 0x602000000012 thread T0</span><br><span class="line">    #0 0x5131e1 in collapse_escapes /home/klee/coreutils-6.10/obj-asan/src/../../src/paste.c:93:12</span><br><span class="line">    #1 0x512e32 in main /home/klee/coreutils-6.10/obj-asan/src/../../src/paste.c:484:3</span><br><span class="line">    #2 0x7f083f772c86 in __libc_start_main /build/glibc-CVJwZb/glibc-2.27/csu/../csu/libc-start.c:310</span><br><span class="line">    #3 0x41a459 in _start (/home/klee/coreutils-6.10/obj-asan/src/paste+0x41a459)</span><br><span class="line"></span><br><span class="line">0x602000000012 is located 0 bytes to the right of 2-byte region [0x602000000010,0x602000000012)</span><br><span class="line">allocated by thread T0 here:</span><br><span class="line">    #0 0x4da310 in malloc (/home/klee/coreutils-6.10/obj-asan/src/paste+0x4da310)</span><br><span class="line">    #1 0x519847 in rpl_malloc /home/klee/coreutils-6.10/obj-asan/lib/../../lib/malloc.c:51:12</span><br><span class="line">    #2 0x5190d4 in xmalloc /home/klee/coreutils-6.10/obj-asan/lib/../../lib/xmalloc.c:49:13</span><br><span class="line">    #3 0x5193c8 in xmemdup /home/klee/coreutils-6.10/obj-asan/lib/../../lib/xmalloc.c:113:18</span><br><span class="line">    #4 0x51941f in xstrdup /home/klee/coreutils-6.10/obj-asan/lib/../../lib/xmalloc.c:121:10</span><br><span class="line">    #5 0x513087 in collapse_escapes /home/klee/coreutils-6.10/obj-asan/src/../../src/paste.c:87:18</span><br><span class="line">    #6 0x512e32 in main /home/klee/coreutils-6.10/obj-asan/src/../../src/paste.c:484:3</span><br><span class="line">    #7 0x7f083f772c86 in __libc_start_main /build/glibc-CVJwZb/glibc-2.27/csu/../csu/libc-start.c:310</span><br><span class="line"></span><br><span class="line">SUMMARY: AddressSanitizer: heap-buffer-overflow /home/klee/coreutils-6.10/obj-asan/src/../../src/paste.c:93:12 in collapse_escapes</span><br><span class="line">Shadow bytes around the buggy address:</span><br><span class="line">  0x0c047fff7fb0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</span><br><span class="line">  0x0c047fff7fc0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</span><br><span class="line">  0x0c047fff7fd0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</span><br><span class="line">  0x0c047fff7fe0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</span><br><span class="line">  0x0c047fff7ff0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</span><br><span class="line">=&gt;0x0c047fff8000: fa fa[02]fa fa fa fa fa fa fa fa fa fa fa fa fa</span><br><span class="line">  0x0c047fff8010: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa</span><br><span class="line">  0x0c047fff8020: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa</span><br><span class="line">  0x0c047fff8030: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa</span><br><span class="line">  0x0c047fff8040: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa</span><br><span class="line">  0x0c047fff8050: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa</span><br><span class="line">Shadow byte legend (one shadow byte represents 8 application bytes):</span><br><span class="line">  Addressable:           00</span><br><span class="line">  Partially addressable: 01 02 03 04 05 06 07</span><br><span class="line">  Heap left redzone:       fa</span><br><span class="line">  Freed heap region:       fd</span><br><span class="line">  Stack left redzone:      f1</span><br><span class="line">  Stack mid redzone:       f2</span><br><span class="line">  Stack right redzone:     f3</span><br><span class="line">  Stack after return:      f5</span><br><span class="line">  Stack use after scope:   f8</span><br><span class="line">  Global redzone:          f9</span><br><span class="line">  Global init order:       f6</span><br><span class="line">  Poisoned by user:        f7</span><br><span class="line">  Container overflow:      fc</span><br><span class="line">  Array cookie:            ac</span><br><span class="line">  Intra object redzone:    bb</span><br><span class="line">  ASan internal:           fe</span><br><span class="line">  Left alloca redzone:     ca</span><br><span class="line">  Right alloca redzone:    cb</span><br><span class="line">==38066==ABORTING</span><br></pre></td></tr></table></figure>
+
+<p>It provides the error which is <code>heap-buffer-overflow</code> and the stack trace when the vulnerability is triggered.</p>
+<p>From the stack trace we can see that the vulnerability location is <code>paste.c:93:12</code>. </p>
+<h3 id="Use-KLEE"><a href="#Use-KLEE" class="headerlink" title="Use KLEE"></a>Use KLEE</h3><p>In my opinion, KLEE is not friendly to KLEE-tyroes. You can’t just use <code>klee ./paste</code> to get the answer you want, because there are plenty of options, and plenty of them are necessary. </p>
+<p>You can find the options <a target="_blank" rel="noopener" href="https://klee.github.io/docs/options/">here</a>. </p>
+<p>I think the one of the most important options could be <code>--search=xxxx</code>, where <code>xxx</code> could be a few choices.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">klee --<span class="built_in">help</span></span></span><br><span class="line">-search - Specify the search heuristic (default=random-path interleaved with nurs:covnew)</span><br><span class="line">  =dfs - use Depth First Search (DFS)</span><br><span class="line">  =random-state - randomly select a state to explore</span><br><span class="line">  =random-path - use Random Path Selection (see OSDI&#x27;08 paper)</span><br><span class="line">  =nurs:covnew - use Non Uniform Random Search (NURS) with Coverage-New heuristic</span><br><span class="line">  =nurs:md2u - use NURS with Min-Dist-to-Uncovered heuristic</span><br><span class="line">  =nurs:depth - use NURS with 2^depth heuristic</span><br><span class="line">  =nurs:icnt - use NURS with Instr-Count heuristic</span><br><span class="line">  =nurs:cpicnt - use NURS with CallPath-Instr-Count heuristic</span><br><span class="line">  =nurs:qc - use NURS with Query-Cost heuristic</span><br></pre></td></tr></table></figure>
+
+<p>Proper search strategy help you find the bug faster. </p>
+<p>Let’s use the following command to test the first vulnerability.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">klee --simplify-sym-indices --write-cvcs --write-cov --output-module --max-memory=1000 --disable-inlining --optimize --use-forked-solver --use-cex-cache --libc=uclibc --posix-runtime --external-calls=all --only-output-states-covering-new --max-sym-array-size=4096 --max-solver-time=30s --max-time=10min --watchdog --max-memory-inhibit=false --max-static-fork-pct=1 --max-static-solve-pct=1 --max-static-cpfork-pct=1 --switch-type=internal --search=nurs:covnew --use-batching-search --batch-instructions=10000 ./paste.bc --sym-args 0 1 10 --sym-args 0 2 2 --sym-files 1 8 --sym-stdin 8 --sym-stdout</span><br></pre></td></tr></table></figure>
+
+<p>After some waiting, you could see a lot of files generated inside the <code>klee-out-N</code> folder. If the bug is found, there should be a <code>.ptr.err</code> file. </p>
+<p>Most vulnerabilities could be discovered in less than ten minutes with a proper configuration and good search strategy. However, bugs 2, 3 and 4 may take up to an hour.</p>
+<h3 id="Compare-the-result"><a href="#Compare-the-result" class="headerlink" title="Compare the result"></a>Compare the result</h3><p>Let’s see what we’ve got!</p>
+<img src="/Users/todd/Library/Application Support/typora-user-images/image-20221031170201308.png" alt="image-20221031170201308" style="zoom:50%;" />
+
+<p>The line shown here is 93. It is the same as the result in the sanitizer.</p>
+<p>Therefore, we are able to say that we use KLEE to successfully locate the bug. </p>
+<h2 id="Appendix"><a href="#Appendix" class="headerlink" title="Appendix"></a>Appendix</h2><p>Here are the 10 vulnerability found by the sanitizer and also found by KLEE.</p>
+<table>
+<thead>
+<tr>
+<th>Index</th>
+<th>Crashed Location</th>
+<th>Stack Trace</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>paste.c:93:12</td>
+<td>#0 0x5131e1 in collapse_escapes &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;paste.c:93:12<br/>    #1 0x512e32 in main &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;paste.c:484:3<br/>    #2 0x7f083f772c86 in __libc_start_main &#x2F;build&#x2F;glibc-CVJwZb&#x2F;glibc-2.27&#x2F;csu&#x2F;..&#x2F;csu&#x2F;libc-start.c:310<br/>    #3 0x41a459 in _start (&#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;paste+0x41a459)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>ptx.c:1510:7</td>
+<td>#0 0x51b6b4 in define_all_fields &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;ptx.c:1510:7<br/>    #1 0x5197ec in generate_all_output &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;ptx.c:1840:7<br/>    #2 0x514a9a in main &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;ptx.c:2212:3<br/>    #3 0x7f06357f2c86 in __libc_start_main &#x2F;build&#x2F;glibc-CVJwZb&#x2F;glibc-2.27&#x2F;csu&#x2F;..&#x2F;csu&#x2F;libc-start.c:310<br/>    #4 0x41a8a9 in _start (&#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;ptx+0x41a8a9)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>pr.c:2670:11</td>
+<td>#0 0x51a287 in char_to_clump &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;pr.c:2670:11<br/>    #1 0x519991 in read_line &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;pr.c:2552:15<br/>    #2 0x516f44 in print_page &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;pr.c:1826:13<br/>    #3 0x515844 in print_files &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;pr.c:1642:10<br/>    #4 0x51445a in main &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;pr.c:1173:6<br/>    #5 0x7f732bedcc86 in __libc_start_main &#x2F;build&#x2F;glibc-CVJwZb&#x2F;glibc-2.27&#x2F;csu&#x2F;..&#x2F;csu&#x2F;libc-start.c:310<br/>    #6 0x41a719 in _start (&#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;pr+0x41a719)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>regexec.c:568</td>
+<td>&#x3D;&#x3D;76253&#x3D;&#x3D;    at 0x40E5FD: re_copy_regs (regexec.c:568)<br/>&#x3D;&#x3D;76253&#x3D;&#x3D;    by 0x4059B5: re_search_stub (regexec.c:489)<br/>&#x3D;&#x3D;76253&#x3D;&#x3D;    by 0x405A8F: rpl_re_search (regexec.c:334)<br/>&#x3D;&#x3D;76253&#x3D;&#x3D;    by 0x40216E: tac_seekable (tac.c:267)<br/>&#x3D;&#x3D;76253&#x3D;&#x3D;    by 0x401D51: tac_file (tac.c:552)<br/>&#x3D;&#x3D;76253&#x3D;&#x3D;    by 0x401BE2: main (tac.c:656)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>quotearg.c:248:41</td>
+<td>#0 0x519ba5 in quotearg_buffer_restyled &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quotearg.c:248:41<br/>    #1 0x519534 in quotearg_buffer &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quotearg.c:526:14<br/>    #2 0x51ba92 in quotearg_n_options &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quotearg.c:624:20<br/>    #3 0x51bd7d in quotearg_n_style &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quotearg.c:666:10<br/>    #4 0x519031 in quote_n &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quote.c:31:10<br/>    #5 0x519058 in quote &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quote.c:39:10<br/>    #6 0x51336c in main &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;mkdir.c:194:5<br/>    #7 0x7fc69f358c86 in __libc_start_main &#x2F;build&#x2F;glibc-CVJwZb&#x2F;glibc-2.27&#x2F;csu&#x2F;..&#x2F;csu&#x2F;libc-start.c:310<br/>    #8 0x41a689 in _start (&#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;mkdir+0x41a689)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>quotearg.c:248:41</td>
+<td>#0 0x516265 in quotearg_buffer_restyled &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quotearg.c:248:41<br/>    #1 0x515bf4 in quotearg_buffer &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quotearg.c:526:14<br/>    #2 0x518152 in quotearg_n_options &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quotearg.c:624:20<br/>    #3 0x51843d in quotearg_n_style &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quotearg.c:666:10<br/>    #4 0x5156f1 in quote_n &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quote.c:31:10<br/>    #5 0x515718 in quote &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quote.c:39:10<br/>    #6 0x512d17 in main &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;mkfifo.c:119:5<br/>    #7 0x7fe6dd725c86 in __libc_start_main &#x2F;build&#x2F;glibc-CVJwZb&#x2F;glibc-2.27&#x2F;csu&#x2F;..&#x2F;csu&#x2F;libc-start.c:310<br/>    #8 0x41a319 in _start (&#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;mkfifo+0x41a319)</td>
+</tr>
+<tr>
+<td>7</td>
+<td>quotearg.c:248:41</td>
+<td>#0 0x518485 in quotearg_buffer_restyled &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quotearg.c:248:41<br/>    #1 0x517e14 in quotearg_buffer &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quotearg.c:526:14<br/>    #2 0x51a372 in quotearg_n_options &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quotearg.c:624:20<br/>    #3 0x51a65d in quotearg_n_style &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quotearg.c:666:10<br/>    #4 0x517911 in quote_n &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quote.c:31:10<br/>    #5 0x517938 in quote &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;lib&#x2F;..&#x2F;..&#x2F;lib&#x2F;quote.c:39:10<br/>    #6 0x513736 in main &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;mknod.c:171:5<br/>    #7 0x7f30efbaec86 in __libc_start_main &#x2F;build&#x2F;glibc-CVJwZb&#x2F;glibc-2.27&#x2F;csu&#x2F;..&#x2F;csu&#x2F;libc-start.c:310<br/>    #8 0x41a429 in _start (&#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;mknod+0x41a429)</td>
+</tr>
+<tr>
+<td>8</td>
+<td>md5sum.c:213:15</td>
+<td>#0 0x5158e3 in bsd_split_3 &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;md5sum.c:213:15<br/>    #1 0x514d37 in split_3 &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;md5sum.c:259:11<br/>    #2 0x513e98 in digest_check &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;md5sum.c:471:14<br/>    #3 0x51328c in main &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;md5sum.c:667:8<br/>    #4 0x7f958d6d6c86 in __libc_start_main &#x2F;build&#x2F;glibc-CVJwZb&#x2F;glibc-2.27&#x2F;csu&#x2F;..&#x2F;csu&#x2F;libc-start.c:310<br/>    #5 0x41a4e9 in _start (&#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;md5sum+0x41a4e9)</td>
+</tr>
+<tr>
+<td>9</td>
+<td>ptx.c:397:17</td>
+<td>#0 0x5159d8 in copy_unescaped_string &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;ptx.c:397:17<br/>    #1 0x513847 in main &#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;..&#x2F;..&#x2F;src&#x2F;ptx.c:2052:24<br/>    #2 0x7ff3b9391c86 in __libc_start_main &#x2F;build&#x2F;glibc-CVJwZb&#x2F;glibc-2.27&#x2F;csu&#x2F;..&#x2F;csu&#x2F;libc-start.c:310<br/>    #3 0x41a8a9 in _start (&#x2F;home&#x2F;klee&#x2F;coreutils-6.10&#x2F;obj-asan&#x2F;src&#x2F;ptx+0x41a8a9)</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Nah</td>
+<td>Nah</td>
+</tr>
+</tbody></table>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/categories/">Writing</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="http://github.com/LotharShi">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#KLEE"><span class="toc-number">1.</span> <span class="toc-text">KLEE</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Introduction"><span class="toc-number">1.1.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Symbolic-Execution"><span class="toc-number">1.2.</span> <span class="toc-text">Symbolic Execution</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Use-KLEE-to-Test-Coreutils"><span class="toc-number">2.</span> <span class="toc-text">Use KLEE to Test Coreutils</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Build-Coreutils-with-Sanitizers"><span class="toc-number">2.1.</span> <span class="toc-text">Build Coreutils with Sanitizers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Use-sanitizers-to-check-the-vulnerability"><span class="toc-number">2.2.</span> <span class="toc-text">Use sanitizers to check the vulnerability</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Use-KLEE"><span class="toc-number">2.3.</span> <span class="toc-text">Use KLEE</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Compare-the-result"><span class="toc-number">2.4.</span> <span class="toc-text">Compare the result</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Appendix"><span class="toc-number">3.</span> <span class="toc-text">Appendix</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&text=KLEE Coreutils Testing"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&title=KLEE Coreutils Testing"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&is_video=false&description=KLEE Coreutils Testing"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=KLEE Coreutils Testing&body=Check out this article: http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&title=KLEE Coreutils Testing"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&title=KLEE Coreutils Testing"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&title=KLEE Coreutils Testing"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&title=KLEE Coreutils Testing"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&name=KLEE Coreutils Testing&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://lotharshi.github.io/2022/10/25/KLEE%20Coreutils%20Testing/&t=KLEE Coreutils Testing"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022
+    Lothar
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/LotharShi">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJJPDKLTJM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RJJPDKLTJM');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
