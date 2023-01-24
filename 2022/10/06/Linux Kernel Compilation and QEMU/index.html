@@ -15,7 +15,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://lotharshi.github.io/images/image-20221006215827772.png">
 <meta property="article:published_time" content="2022-10-06T14:05:45.000Z">
-<meta property="article:modified_time" content="2022-10-13T12:31:38.511Z">
+<meta property="article:modified_time" content="2023-01-24T08:37:28.653Z">
 <meta property="article:author" content="Lothar">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://lotharshi.github.io/images/image-20221006215827772.png">
@@ -174,34 +174,34 @@
 
 <h3 id="Download-the-necessary-binaries"><a href="#Download-the-necessary-binaries" class="headerlink" title="Download the necessary binaries"></a>Download the necessary binaries</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sudo apt-get install git fakeroot build-essential ncurses-dev xz-utils libssl-dev bc flex libelf-dev bison</span></span><br></pre></td></tr></table></figure>
 
-<p>Otherwise you may face a lot of errores because of the lack of binary.</p>
+<p>Otherwise you may face a lot of errors because of the lack of binary.</p>
 <h3 id="Compile-the-kernel"><a href="#Compile-the-kernel" class="headerlink" title="Compile the kernel"></a>Compile the kernel</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cd</span> linux-5.18.10</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make menuconfig <span class="comment"># Configure it as you need</span></span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make -j32</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make all</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">make modules</span></span><br></pre></td></tr></table></figure>
 
 <img src="/images/image-20221006215827772.png" alt="image-20221006215827772" style="zoom:50%;" />
 
-<h3 id="Compilation-Result"><a href="#Compilation-Result" class="headerlink" title="Compilation Result"></a>Compilation Result</h3><p>After all these procedure, <code>bzImage</code> file could be found at <code>/arch/x86/boot/bzImage</code>.</p>
+<h3 id="Compilation-Result"><a href="#Compilation-Result" class="headerlink" title="Compilation Result"></a>Compilation Result</h3><p>After all these procedures, <code>bzImage</code> file could be found at <code>/arch/x86/boot/bzImage</code>.</p>
 <h3 id="Possible-error"><a href="#Possible-error" class="headerlink" title="Possible error"></a>Possible error</h3><h4 id="Case-1"><a href="#Case-1" class="headerlink" title="Case 1"></a>Case 1</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Your display is too small to run Menuconfig!</span><br><span class="line">It must be at least 19 lines by 80 columns.</span><br></pre></td></tr></table></figure>
 
-<p>This case, just as said, you could just resize the terminal to make it bigger. </p>
+<p>In this case, just as said, you could just resize the terminal to make it bigger. </p>
 <p>(This is a fun error that I have never such error before)</p>
 <h4 id="Case-2"><a href="#Case-2" class="headerlink" title="Case 2"></a>Case 2</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">No rule to make target &#x27;debian/canonical-certs.pem&#x27;, needed by &#x27;certs/x509_certificate_list&#x27;</span><br></pre></td></tr></table></figure>
 
-<p>This case, modify the <code>.config</code> file. And change the following variables to empty.</p>
+<p>In this case, modify the <code>.config</code> file. And change the following variables to empty.</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CONFIG_SYSTEM_TRUSTED_KEYS=&#x27;&#x27;</span><br><span class="line">CONFIG_SYSTEM_REVOCATION_KEYS=&#x27;&#x27;</span><br></pre></td></tr></table></figure>
 
 <p>Then can continue to <code>make all</code>.</p>
 <h4 id="Case-3"><a href="#Case-3" class="headerlink" title="Case 3"></a>Case 3</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">No enough space on the disk</span><br></pre></td></tr></table></figure>
 
-<p>I didn’t imagine that comling kernel is such a space-consuming thing. So the pre-allocated disk space totally runs out. </p>
-<p>This case, ask VMWare to allocate more disk space for the VM. Then use tools to make the newly added space available.</p>
+<p>I didn’t imagine that compiling kernel is such a space-consuming thing. So the pre-allocated disk space totally runs out. </p>
+<p>In this case, ask VMWare to allocate more disk space for the VM. Then use tools to make the newly added space available.</p>
 <p>May kindly refer to this <a target="_blank" rel="noopener" href="https://blog.csdn.net/kxh123456/article/details/121873296">https://blog.csdn.net/kxh123456/article/details/121873296</a></p>
-<h2 id="QEMU"><a href="#QEMU" class="headerlink" title="QEMU"></a>QEMU</h2><h3 id="What-is-QEMU"><a href="#What-is-QEMU" class="headerlink" title="What is QEMU?"></a>What is QEMU?</h3><p><a target="_blank" rel="noopener" href="https://www.qemu.org/">QEMU</a> is an open source machine emulator and virtualizer. I recognize it as a virtual machine software, like VMWare or VirtualBox. But its advantage is more about hardware virtualizaion.</p>
-<p>It works on the user layer of the local machine, which indicates that plenty of the privileged hardware and kernel instrucitons are not available. So it may perform poorly, and normally will cooperate with KVM to realize the virtualization.</p>
+<h2 id="QEMU"><a href="#QEMU" class="headerlink" title="QEMU"></a>QEMU</h2><h3 id="What-is-QEMU"><a href="#What-is-QEMU" class="headerlink" title="What is QEMU?"></a>What is QEMU?</h3><p><a target="_blank" rel="noopener" href="https://www.qemu.org/">QEMU</a> is an open source machine emulator and virtualizer. I recognize it as virtual machine software, like VMWare or VirtualBox. But its advantage is more about hardware virtualization.</p>
+<p>It works on the user layer of the local machine, which indicates that plenty of the privileged hardware and kernel instructions are not available. So it may perform poorly, and normally will cooperate with KVM to realize the virtualization.</p>
 <h3 id="Install-QEMU"><a href="#Install-QEMU" class="headerlink" title="Install QEMU"></a>Install QEMU</h3><p>There are two ways, with <code>apt install</code> or compile it yourself.</p>
-<p>The first method is preffered since it’s easier to implement and time saving.</p>
+<p>The first method is preferred since it’s easier to implement and time-saving.</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">apt install qemu qemu-kvm</span></span><br></pre></td></tr></table></figure>
 
-<p>(After I tried both ways, I feel like nobody is gonna try the latter method unless he&#x2F;she is boring enough and have plenty of time and space…)</p>
+<p>(After I tried both ways, I feel like nobody is gonna try the latter method unless he&#x2F;she is boring enough and has plenty of time and space…)</p>
 <h3 id="To-Use"><a href="#To-Use" class="headerlink" title="To Use"></a>To Use</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">qemu-system-x86_64</span></span><br></pre></td></tr></table></figure>
 
 
