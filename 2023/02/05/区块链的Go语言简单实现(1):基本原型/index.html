@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="写在前面最近心血来潮正在入门Go语言，看了一些教程了解了一些基本的语法之后，回想起曾经的学习经历，觉得还是应该通过做一个小项目的方式来更快入门，所以便有了这次尝试。参考的教程是Ivan Kuznetsov的blockchain_go，内容兴许会大部分来源于对其博客的翻译，但还是争取加入一些自己的理解，以作为自己学习Go语言的记录，也顺便练习英语。 简介区块链是21世纪最为革命性的科技，并且仍处于不">
+<meta property="og:type" content="article">
+<meta property="og:title" content="区块链的Go语言简单实现(1):基本原型">
+<meta property="og:url" content="http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/index.html">
+<meta property="og:site_name" content="Where Lothar Writes Blogs">
+<meta property="og:description" content="写在前面最近心血来潮正在入门Go语言，看了一些教程了解了一些基本的语法之后，回想起曾经的学习经历，觉得还是应该通过做一个小项目的方式来更快入门，所以便有了这次尝试。参考的教程是Ivan Kuznetsov的blockchain_go，内容兴许会大部分来源于对其博客的翻译，但还是争取加入一些自己的理解，以作为自己学习Go语言的记录，也顺便练习英语。 简介区块链是21世纪最为革命性的科技，并且仍处于不">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://lotharshi.github.io/images/image-20230205192757110.png">
+<meta property="article:published_time" content="2023-02-05T09:14:08.000Z">
+<meta property="article:modified_time" content="2023-02-05T11:45:31.580Z">
+<meta property="article:author" content="Lothar">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lotharshi.github.io/images/image-20230205192757110.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>区块链的Go语言简单实现(1):基本原型</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/LotharShi">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/01/25/KMP%E7%AE%97%E6%B3%95%E5%92%8Cstrstr-%E7%9A%84%E5%AE%9E%E7%8E%B0/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&text=区块链的Go语言简单实现(1):基本原型"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&title=区块链的Go语言简单实现(1):基本原型"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&is_video=false&description=区块链的Go语言简单实现(1):基本原型"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=区块链的Go语言简单实现(1):基本原型&body=Check out this article: http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&title=区块链的Go语言简单实现(1):基本原型"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&title=区块链的Go语言简单实现(1):基本原型"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&title=区块链的Go语言简单实现(1):基本原型"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&title=区块链的Go语言简单实现(1):基本原型"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&name=区块链的Go语言简单实现(1):基本原型&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&t=区块链的Go语言简单实现(1):基本原型"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">2.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8C%BA%E5%9D%97"><span class="toc-number">3.</span> <span class="toc-text">区块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8C%BA%E5%9D%97%E9%93%BE"><span class="toc-number">4.</span> <span class="toc-text">区块链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AF%AD"><span class="toc-number">5.</span> <span class="toc-text">结语</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%93%BE%E6%8E%A5"><span class="toc-number">6.</span> <span class="toc-text">链接</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        区块链的Go语言简单实现(1):基本原型
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Lothar</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-02-05T09:14:08.000Z" itemprop="datePublished">2023-02-05</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/Fun/">Fun</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最近心血来潮正在入门Go语言，看了一些教程了解了一些基本的语法之后，回想起曾经的学习经历，觉得还是应该通过做一个小项目的方式来更快入门，所以便有了这次尝试。参考的教程是Ivan Kuznetsov的<a target="_blank" rel="noopener" href="https://github.com/Jeiwan/blockchain_go">blockchain_go</a>，内容兴许会大部分来源于对其博客的翻译，但还是争取加入一些自己的理解，以作为自己学习Go语言的记录，也顺便练习英语。</p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>区块链是21世纪最为革命性的科技，并且仍处于不断成长之中，潜力无限。究其本质，区块链其实只是一个分布式数据库。但是使其与其他分布式数据库相比最为不同的是，它是一个公共的，而非私有。每个人都可以拥有一个或完整或部分的数据库。此外，每一个新的数据只有在所有数据库持有者都达成共识后才可以被添加。而正是因为区块链的出现，使得加密货币和智能合约成为可能。</p>
+<p>在这个系列中，我们会实现一个简单的区块链，并基于此做一个简化版的加密货币。</p>
+<h2 id="区块"><a href="#区块" class="headerlink" title="区块"></a>区块</h2><p>我们先从<code>区块链</code>中的<code>区块</code>开始说起。区块就是在区块链中充当存储有价值的信息作用的组成。譬如，比特币区块存储了交易信息，而交易信息正是任何一种加密货币的精华。除此之外，一个区块也包含了一些技术信息，比如它的版本，当前的时间戳，以及前一块的哈希值。</p>
+<p>但是在我们这次的实践当中，我们并不会做像刚才描述的比特币中的那种区块，而是一种简化版本。简化后，我们的区块只会包含一些标志信息，大概长这个样子：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Block <span class="keyword">struct</span> &#123;</span><br><span class="line">  Timestamp      <span class="type">int64</span></span><br><span class="line">  Data          []<span class="type">byte</span></span><br><span class="line">  PrevBlockHash []<span class="type">byte</span></span><br><span class="line">  Hash          []<span class="type">byte</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>Timestamp</code>就是当前(也就是这个区块创建之时)的时间戳，<code>Data</code>是这个区块中包含的实际的有价值的信息，<code>PrevBlockHash</code>则是前一个区块的哈希值，而<code>Hash</code>则是当前区块的哈希值。在Bitcoin的例子中，<code>Timestamp</code> 、<code>Data</code>和<code>Hash</code>是区块的头部，组成了一个单独的数据结构。而交易信息(也就是我们这里的<code>Data</code>)则是另一个单独的数据结构。但是出于简化我们就把它们合在一起了。</p>
+<p>现在来考虑一下我们该如何计算哈希。对于区块链来说，哈希的计算方法是非常重要的一环，而这也是让区块链变得安全的重中之重。需要注意的是，哈希的计算应当是一个计算困难(computational difficult)的事情，即便在运行速度很快的电脑上也应当如此(这就是为什么人们花钱买很强劲的GPU来挖比特币)。这是一个有意为之的架构设计——让添加新的区块变得困难，从而防止在其被添加之后的更改。这部分会在后面再次讨论，这里先这样提一下。</p>
+<p>至于现在，我们将仅仅把刚才说到的区块内的东西拼接起来，并且为它们计算一个<strong>SHA-256</strong>的哈希值。我们会在下面的<code>SetHash</code>方法中实现：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Block)</span></span> SetHash()&#123;</span><br><span class="line">  timestamp := []<span class="type">byte</span>(strconv.FormatInt(b.Timestamp,<span class="number">10</span>))</span><br><span class="line">  headers := bytes.Join([][]<span class="type">byte</span>&#123;b.PrevBlockHash, b.Data, timestamp&#125;, []<span class="type">byte</span>&#123;&#125;)</span><br><span class="line">  hash := sha256.Sum256(headers)</span><br><span class="line">  </span><br><span class="line">  b.Hash = hash[:]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来，我们再实现一个创建block的函数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewBlock</span><span class="params">(data <span class="type">string</span>, PrevBlockHash []<span class="type">byte</span>)</span></span> *Block&#123;</span><br><span class="line">  block := &amp;Block&#123;time.Now().Unix(), []<span class="type">byte</span>(data), PrevBlockHash, []<span class="type">byte</span>&#123;&#125;&#125;</span><br><span class="line">  block.SetHash()</span><br><span class="line">  <span class="keyword">return</span> block</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此，<code>block</code>的实现就完成了。</p>
+<h2 id="区块链"><a href="#区块链" class="headerlink" title="区块链"></a>区块链</h2><p>区块就绪后，是时候准备链了。本质上说，区块链就是一个具有特定数据结构的数据库，而这个数据结构就是有序且反向连接的链表。这意味着区块会按照插入的顺序来存放，并且每个新来的区块都会和前一个所连接。这种结构保证了对最新区块的快速获取，以及（有效地）通过哈希值来获得一个区块。</p>
+<p>在Golang中，这种结构可以通过使用一个<code>array</code>和一个<code>map</code>来实现。<code>array</code>将用来有序保存的哈希值，而<code>map</code>则用来保存<code>hash -&gt; block</code>对。（顺带一提，Go中array是有序的而map是无序的。）对于我们的区块链原型，我们将仅使用一个<code>array</code>，因为暂时并不需要通过哈希值来获取区块这一操作。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Blockchain <span class="keyword">struct</span> &#123;</span><br><span class="line">  blocks []*Block</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这就是我们的区块链啦！是不是没想到这么简单。</p>
+<p>接下来让我们尝试给其中添加区块：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(bc *Blockchain)</span></span> AddBlock(data <span class="type">string</span>) &#123;</span><br><span class="line">  prevBlock := bc.blocks[<span class="built_in">len</span>(bc.blocks) <span class="number">-1</span> ]</span><br><span class="line">  newBlock := NewBlock(data, prevBlock.hash)</span><br><span class="line">  bc.blocks = <span class="built_in">append</span>(bc.blocks, newBlock)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当然了，想要新增一个块儿，起码得有一个块儿。但是我们现在还没有第一个区块。所以对任何一个区块链来说，都有至少一个区块。而这第一个区块通常被叫做**创世区块(Genesis Block)**。我们现在通过以下方法来创造一个：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewGenesisBlock</span><span class="params">()</span></span> *Block &#123;</span><br><span class="line">  <span class="keyword">return</span> NewBlock(<span class="string">&quot;Genesis Block&quot;</span>, []<span class="type">byte</span>&#123;&#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这之后，我们可以使用以下函数来使用创世区块来创造一条区块链：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewBlockchain</span><span class="params">()</span></span> *Blockchain &#123;</span><br><span class="line">  <span class="keyword">return</span> &amp;Blockchain&#123;[]*Block&#123;NewGenesisBlock&#125;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>让我们看看我们的区块链是否正常运作：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">  bc := NewBlockchain()</span><br><span class="line">  </span><br><span class="line">  bc.AddBlock(<span class="string">&quot;Send 1 BTC to Lothar&quot;</span>)</span><br><span class="line">  bc.AddBlock(<span class="string">&quot;Send 2 more BTC to Lothar&quot;</span>)</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">for</span> _, block := <span class="keyword">range</span> bc.blocks &#123;</span><br><span class="line">    fmt.Printf(<span class="string">&quot;Prev.hash: %x\n&quot;</span>, block.PrevBlockHash)</span><br><span class="line">    fmt.Printf(<span class="string">&quot;Data: %s\n&quot;</span>, block.Data)</span><br><span class="line">    fmt.Printf(<span class="string">&quot;Hash: %x\n&quot;</span>, block.Hash)</span><br><span class="line">    fmt.Println()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果如下：</p>
+<img src="/images/image-20230205192757110.png" alt="image-20230205192757110" style="zoom:50%;" />
+
+<p>成功！</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>我们构建了一个简单的区块链原型。目前来说，这个区块链仅仅是一个区块数组，每个区块都有一个指向前一个区块的链接，而真实的区块链比这个要复杂得多的多。在我们的区块中，添加一个新的区块简单且快捷，但是真实的区块链中添加一个新的区块是需要一些工作的：一个区块必须要进行一些复杂繁琐的计算才可以获得添加新块的许可（也就是PoW工作量证明机制）。此外，区块链是一个分布式数据库，而并没有单一决策者。因此，添加新的区块需要所有参与者的统一（也就是共识机制）。并且，在我们的区块里还没有任何交易信息呢。</p>
+<p>但是没事，在后面的部分中我们都会对上述所有特性进行探究。</p>
+<h2 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h2><p><a target="_blank" rel="noopener" href="https://github.com/LotharShi/Simple-Blockchain-in-Go/tree/master/Part1">Source Code</a></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/categories/">Writing</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="http://github.com/LotharShi">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">2.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8C%BA%E5%9D%97"><span class="toc-number">3.</span> <span class="toc-text">区块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8C%BA%E5%9D%97%E9%93%BE"><span class="toc-number">4.</span> <span class="toc-text">区块链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AF%AD"><span class="toc-number">5.</span> <span class="toc-text">结语</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%93%BE%E6%8E%A5"><span class="toc-number">6.</span> <span class="toc-text">链接</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&text=区块链的Go语言简单实现(1):基本原型"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&title=区块链的Go语言简单实现(1):基本原型"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&is_video=false&description=区块链的Go语言简单实现(1):基本原型"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=区块链的Go语言简单实现(1):基本原型&body=Check out this article: http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&title=区块链的Go语言简单实现(1):基本原型"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&title=区块链的Go语言简单实现(1):基本原型"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&title=区块链的Go语言简单实现(1):基本原型"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&title=区块链的Go语言简单实现(1):基本原型"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&name=区块链的Go语言简单实现(1):基本原型&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://lotharshi.github.io/2023/02/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0(1):%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%9E%8B/&t=区块链的Go语言简单实现(1):基本原型"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2023
+    Lothar
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/LotharShi">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJJPDKLTJM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RJJPDKLTJM');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
