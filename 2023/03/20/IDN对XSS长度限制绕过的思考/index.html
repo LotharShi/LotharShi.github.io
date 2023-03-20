@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言本来在想这篇是用中文写还是用英文写，但考虑到后面会涉及到不少中文相关的东西，毕竟IDN嘛，还是用中文写会更协调统一一点。而动机则是来源于前几天被问到对于长度限制的XSS的绕过。 一个神奇的长度绕过见过的最短的，大概是输入框对于输入的限制为length &lt;&#x3D; 4，不难想象这个限制对于常见的XSS payload其实是很难的。即便是引用外部js，域名也不会这么短。毕竟后缀至少是 2 位，加上">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IDN对XSS长度限制绕过的思考">
+<meta property="og:url" content="http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/index.html">
+<meta property="og:site_name" content="Where Lothar Writes Blogs">
+<meta property="og:description" content="前言本来在想这篇是用中文写还是用英文写，但考虑到后面会涉及到不少中文相关的东西，毕竟IDN嘛，还是用中文写会更协调统一一点。而动机则是来源于前几天被问到对于长度限制的XSS的绕过。 一个神奇的长度绕过见过的最短的，大概是输入框对于输入的限制为length &lt;&#x3D; 4，不难想象这个限制对于常见的XSS payload其实是很难的。即便是引用外部js，域名也不会这么短。毕竟后缀至少是 2 位，加上">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://lotharshi.github.io/images/image-20230320153722945.png">
+<meta property="og:image" content="http://lotharshi.github.io/images/image-20230320154139362.png">
+<meta property="og:image" content="http://lotharshi.github.io/images/image-20230320155104438.png">
+<meta property="article:published_time" content="2023-03-20T06:34:58.000Z">
+<meta property="article:modified_time" content="2023-03-20T08:02:20.221Z">
+<meta property="article:author" content="Lothar">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lotharshi.github.io/images/image-20230320153722945.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>IDN对XSS长度限制绕过的思考</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Writing</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/02/14/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84Go%E8%AF%AD%E8%A8%80%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0-3-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%92%8CCLI/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&text=IDN对XSS长度限制绕过的思考"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&title=IDN对XSS长度限制绕过的思考"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&is_video=false&description=IDN对XSS长度限制绕过的思考"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=IDN对XSS长度限制绕过的思考&body=Check out this article: http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&title=IDN对XSS长度限制绕过的思考"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&title=IDN对XSS长度限制绕过的思考"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&title=IDN对XSS长度限制绕过的思考"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&title=IDN对XSS长度限制绕过的思考"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&name=IDN对XSS长度限制绕过的思考&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&t=IDN对XSS长度限制绕过的思考"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E7%A5%9E%E5%A5%87%E7%9A%84%E9%95%BF%E5%BA%A6%E7%BB%95%E8%BF%87"><span class="toc-number">2.</span> <span class="toc-text">一个神奇的长度绕过</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IDN"><span class="toc-number">3.</span> <span class="toc-text">IDN</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Punycode"><span class="toc-number">4.</span> <span class="toc-text">Punycode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%92%93%E9%B1%BC"><span class="toc-number">5.</span> <span class="toc-text">钓鱼</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Unicode%E7%9A%84%E8%A7%84%E8%8C%83%E5%8C%96"><span class="toc-number">6.</span> <span class="toc-text">Unicode的规范化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BD%9C%E5%9C%A8%E5%88%A9%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">7.</span> <span class="toc-text">潜在利用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%95%E8%BF%87%E5%AD%97%E7%AC%A6%E8%BF%87%E6%BB%A4"><span class="toc-number">7.1.</span> <span class="toc-text">绕过字符过滤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%95%E8%BF%87%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6"><span class="toc-number">7.2.</span> <span class="toc-text">绕过长度限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SQL-%E6%B3%A8%E5%85%A5"><span class="toc-number">7.3.</span> <span class="toc-text">SQL 注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5"><span class="toc-number">7.4.</span> <span class="toc-text">模板注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5"><span class="toc-number">7.5.</span> <span class="toc-text">命令注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A"><span class="toc-number">7.6.</span> <span class="toc-text">目录穿越</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ssrf"><span class="toc-number">7.7.</span> <span class="toc-text">ssrf</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%95%E8%BF%87%E6%96%87%E4%BB%B6%E5%90%8E%E7%BC%80%E9%99%90%E5%88%B6"><span class="toc-number">7.8.</span> <span class="toc-text">绕过文件后缀限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#url-%E8%B7%B3%E8%BD%AC"><span class="toc-number">7.9.</span> <span class="toc-text">url 跳转</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B6%8A%E6%9D%83"><span class="toc-number">7.10.</span> <span class="toc-text">越权</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E4%BB%A5%E4%BD%BF%E7%94%A8%E7%9A%84%E5%B7%A5%E5%85%B7"><span class="toc-number">8.</span> <span class="toc-text">可以使用的工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E5%BC%95%E7%94%A8"><span class="toc-number">9.</span> <span class="toc-text">参考引用</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        IDN对XSS长度限制绕过的思考
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Lothar</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-03-20T06:34:58.000Z" itemprop="datePublished">2023-03-20</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/Attacks/">Attacks</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本来在想这篇是用中文写还是用英文写，但考虑到后面会涉及到不少中文相关的东西，毕竟IDN嘛，还是用中文写会更协调统一一点。而动机则是来源于前几天被问到对于长度限制的XSS的绕过。</p>
+<h2 id="一个神奇的长度绕过"><a href="#一个神奇的长度绕过" class="headerlink" title="一个神奇的长度绕过"></a>一个神奇的长度绕过</h2><p>见过的最短的，大概是输入框对于输入的限制为<code>length &lt;= 4</code>，不难想象这个限制对于常见的XSS payload其实是很难的。即便是引用外部js，域名也不会这么短。毕竟后缀至少是 2 位，加上一个 <code>.</code> 就三位了，再加上前缀还有闭合的字符。</p>
+<p>但还是出现了一个巧妙的绕过方法：使用Unicode域名<code>⑭.₨</code> ，再加上闭合<code>&#39;</code>刚好4个字符。而这个Unicode域名会被浏览器转为<code>14.rs</code>进行访问，从而代入payload实现了XSS。</p>
+<p>这个原理要从IDN说起。</p>
+<h2 id="IDN"><a href="#IDN" class="headerlink" title="IDN"></a>IDN</h2><p>最开始的时候的互联网域名其实相当质朴，只能使用ASCII码字母<code>a-z</code>，数字<code>1-9</code>以及其他一些字符。但回想起域名代替ip地址的初心，不就是为了好记吗。而世界上多的是使用其他语种的人，比如使用中文的我们，因此国际化域名(International Domain Name, IDN)应运而生。</p>
+<p>Wikipedia里是这么讲的：</p>
+<blockquote>
+<p><strong>国际化域名</strong>（英語：Internationalized Domain Name，缩写：IDN）又称特殊字元域名，是指部分或完全使用特殊的文字或非拉丁字母组成的互联网域名，包括阿拉伯语、中文、俄语、泰米尔语、希伯来语或韩语等使用非拉丁字母的语言，这些文字经多字节万国码编译而成。在域名系统中，国际化域名使用Punycode转写并以美国信息交换标准代码字符串储存。</p>
+</blockquote>
+<p>还记得在本科时候有段时间大家突然发现输入诸如<code>双一流大学.com</code>会跳转到某所高校的主页，从而热衷于发现自己的学校对应了什么样的别称。这种中文域名的来源其实就是IDN的出现，而且一个中文域名其实也并不贵。</p>
+<p>但我们知道，尽管域名这里出现了中文或者说Unicode，在DNS服务器那里进行DNS查询的时候，解析可都是由ascii码完成的。为了对此进行协调，<code>IDNA</code>（Internationalizing Domain Names in Applications）被采纳为正式标准（提案 <a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc3490">rfc3490</a> ），说明了应用程序在遇到非 ASCII 字符的时候，应该如何处理。</p>
+<p>而正如前面对Wikipedia的引用中的最后一句里提到的，Punycode是处理的方式。</p>
+<h2 id="Punycode"><a href="#Punycode" class="headerlink" title="Punycode"></a>Punycode</h2><p>Punycode对应的提案是<a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc3492">rfc3492</a>，它的出现使得中文域名可以被解析成为Punycode，然后以Punycode的形式被DNS协议所解析。这就相当于把DNS不支持的非ASCII码的Unicode转化为特定的ASCII码。</p>
+<p>使用Python可以很好的举例，无论<code>idna</code>还是<code>punycode</code>都可以通过<code>encode()</code>来轻松实现：</p>
+<p><img src="/images/image-20230320153722945.png" alt="image-20230320153722945"></p>
+<p>但需要注意的是，转换为punycode只是idna中的一步，最终的目标还是要变成idna样的。</p>
+<p>原理了解后，这里便有了一个新的疑问：我们都知道Unicode杂七杂八有许多许多种，有的难以分辨，这用来钓鱼岂不是美滋滋？</p>
+<h2 id="钓鱼"><a href="#钓鱼" class="headerlink" title="钓鱼"></a>钓鱼</h2><p>钓鱼网站常见的一种套路叫 <strong>同形异义词攻击</strong>。 </p>
+<p>比如说：<br><code>https://www.аррӏе.com/</code>与 <code>https://www.аррle.com/</code></p>
+<p>打眼一看是不是很像？但仔细看其实也能发现出端倪。</p>
+<p>那<code>https://аpple.com</code>与<code>https://apple.com</code>呢？</p>
+<p><img src="/images/image-20230320154139362.png" alt="image-20230320154139362"></p>
+<h2 id="Unicode的规范化"><a href="#Unicode的规范化" class="headerlink" title="Unicode的规范化"></a>Unicode的规范化</h2><p>在 <a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc3491#section-4">rfc3491</a>的第四部分中有对规范化进行探讨。</p>
+<p>Unicode的规范化有4种形式：</p>
+<ol>
+<li><code>NFC</code>: Normalization Form Canonical Composition</li>
+<li><code>NFD</code>: Normalization Form Canonical Decomposition</li>
+<li><code>NFKC</code>: Normalization Form Compatibility Composition</li>
+<li><code>NFKD</code>: Normalization Form Compatibility Decomposition</li>
+</ol>
+<p><img src="/images/image-20230320155104438.png" alt="image-20230320155104438"></p>
+<p>可以看到，对<code>⑭.₨</code>的规范化有两种结果，而后一种就是我们在浏览器中所遇到的处理逻辑。事实上，浏览器所使用的就是规范化标注就是<code>NFKC</code></p>
+<h2 id="潜在利用场景"><a href="#潜在利用场景" class="headerlink" title="潜在利用场景"></a>潜在利用场景</h2><p>根据上面所述，IDNA 基于的 NFKC 本身就会导致各种问题，加上 IDNA 的一些流程，可能造成的安全问题就更多了，比如下面的各种例子：</p>
+<h3 id="绕过字符过滤"><a href="#绕过字符过滤" class="headerlink" title="绕过字符过滤"></a>绕过字符过滤</h3><p>Python3.x 支持了 Unicode 变量名，而根据官方文档，解释器在做代码解析的时候，会对变量名进行规范化，使用的算法是 NFKC：</p>
+<p><a target="_blank" rel="noopener" href="https://docs.python.org/3/reference/lexical_analysis.html#identifiers">https://docs.python.org/3/reference/lexical_analysis.html#identifiers</a></p>
+<p>这样我们就可以利用特殊字符来绕过关键字符串的过滤，从而执行指定的函数，例如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">eval</span> == ᵉval</span><br></pre></td></tr></table></figure>
+
+
+
+<p>根据同样的思路，我们可以找到以下字符：</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ᵃᵇᶜᵈᵉᶠᵍʰᵢʲᵏˡᵐⁿᵒᵖ𝐪ʳˢᵗᵘᵛʷˣʸᶻᴬᴮ<span class="built_in">C</span>ᴰᴱ<span class="variable">F</span>ᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾＱᴿ𝖲ᵀᵁⱽᵂⅩ𝖸<span class="variable">Z</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>当然，这里只列出了其中一种替换情况，Unicode 里还有很多这种规范化之后变成正常字母的字符。</p>
+<h3 id="绕过长度限制"><a href="#绕过长度限制" class="headerlink" title="绕过长度限制"></a>绕过长度限制</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(unicodedata.normalize(<span class="string">&#x27;NFKC&#x27;</span>, <span class="string">&#x27;⑭.₨&#x27;</span>))</span><br><span class="line"><span class="comment"># 14.Rs</span></span><br><span class="line"><span class="built_in">len</span>(<span class="string">&#x27;⑭.₨&#x27;</span>)</span><br><span class="line"><span class="comment"># 3</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="SQL-注入"><a href="#SQL-注入" class="headerlink" title="SQL 注入"></a>SQL 注入</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(unicodedata.normalize(<span class="string">&#x27;NFKC&#x27;</span>, <span class="string">&#x27;＇ or ＇1＇=＇1&#x27;</span>))</span><br><span class="line"><span class="comment"># &#x27; or &#x27;1&#x27;=&#x27;1</span></span><br><span class="line"><span class="built_in">print</span>(unicodedata.normalize(<span class="string">&#x27;NFKC&#x27;</span>, <span class="string">&#x27;＂ or ＂1＂=＂1&#x27;</span>))</span><br><span class="line"><span class="comment"># &quot; or &quot;1&quot;=&quot;1</span></span><br><span class="line"><span class="built_in">print</span>(unicodedata.normalize(<span class="string">&#x27;NFKC&#x27;</span>, <span class="string">&#x27;admin\&#x27; ﹣﹣&#x27;</span>))</span><br><span class="line"><span class="comment"># admin&#x27; --</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="模板注入"><a href="#模板注入" class="headerlink" title="模板注入"></a>模板注入</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(unicodedata.normalize(<span class="string">&#x27;NFKC&#x27;</span>, <span class="string">&#x27;﹛﹛3+3﹜﹜&#x27;</span>))</span><br><span class="line"><span class="comment"># &#123;&#123;3+3&#125;&#125;</span></span><br><span class="line"><span class="built_in">print</span>(unicodedata.normalize(<span class="string">&#x27;NFKC&#x27;</span>, <span class="string">&#x27;［［5+5］］&#x27;</span>))</span><br><span class="line"><span class="comment"># [[5+5]]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="命令注入"><a href="#命令注入" class="headerlink" title="命令注入"></a>命令注入</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(unicodedata.normalize(<span class="string">&#x27;NFKC&#x27;</span>, <span class="string">&#x27;＆＆ whoami&#x27;</span>))</span><br><span class="line"><span class="comment"># &amp;&amp; whoami</span></span><br><span class="line"><span class="built_in">print</span>(unicodedata.normalize(<span class="string">&#x27;NFKC&#x27;</span>, <span class="string">&#x27;｜｜ whoami&#x27;</span>))</span><br><span class="line"><span class="comment"># || whoami</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="目录穿越"><a href="#目录穿越" class="headerlink" title="目录穿越"></a>目录穿越</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(unicodedata.normalize(<span class="string">&#x27;NFKC&#x27;</span>, <span class="string">&#x27;‥/‥/‥/‥/etc/passwd&#x27;</span>))</span><br><span class="line"><span class="comment"># ../../../../etc/passwd</span></span><br><span class="line"><span class="built_in">print</span>(unicodedata.normalize(<span class="string">&#x27;NFKC&#x27;</span>, <span class="string">&#x27;︰/︰/︰/︰/etc/passwd&#x27;</span>))</span><br><span class="line"><span class="comment"># ../../../../etc/passwd</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="ssrf"><a href="#ssrf" class="headerlink" title="ssrf"></a>ssrf</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(unicodedata.normalize(<span class="string">&#x27;NFKC&#x27;</span>, <span class="string">&#x27;①②⑦.⓪.⓪.①&#x27;</span>))</span><br><span class="line"><span class="comment"># 127.0.0.1</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="绕过文件后缀限制"><a href="#绕过文件后缀限制" class="headerlink" title="绕过文件后缀限制"></a>绕过文件后缀限制</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(unicodedata.normalize(<span class="string">&#x27;NFKC&#x27;</span>, <span class="string">&#x27;test.ｐʰｐ&#x27;</span>))</span><br><span class="line"><span class="comment"># test.php</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="url-跳转"><a href="#url-跳转" class="headerlink" title="url 跳转"></a>url 跳转</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;lotharshi。github。io&#x27;</span>.encode(<span class="string">&#x27;idna&#x27;</span>)</span><br><span class="line"><span class="comment"># b&#x27;lotharshi.github.io&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(unicodedata.normalize(<span class="string">&#x27;NFKC&#x27;</span>, <span class="string">&#x27;https://evil.c℀.baidu.com&#x27;</span>))</span><br><span class="line"><span class="comment"># https://evil.ca/c.baidu.com</span></span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;https://evil.c℀.baidu.com&#x27;</span>.encode(<span class="string">&#x27;idna&#x27;</span>)</span><br><span class="line"><span class="comment"># b&#x27;https://evil.ca/c.baidu.com&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="越权"><a href="#越权" class="headerlink" title="越权"></a>越权</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(unicodedata.normalize(<span class="string">&#x27;NFKC&#x27;</span>, <span class="string">&#x27;uname=ªdmin&#x27;</span>))</span><br><span class="line"><span class="comment"># uname=admin</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>总之，在数据流传的节点中，一定要有一个节点进行了 unicode 规范化，这种攻击方式才有可能生效。</strong></p>
+<h2 id="可以使用的工具"><a href="#可以使用的工具" class="headerlink" title="可以使用的工具"></a>可以使用的工具</h2><p><a target="_blank" rel="noopener" href="https://www.compart.com/en/unicode/%EF%BC%9A">https://www.compart.com/en/unicode/：</a> 可以搜索特定字符的相似字符。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/h13t0ry/UnicodeToy%EF%BC%9A%E5%8F%AF%E4%BB%A5fuzz%E8%BF%99%E7%A7%8D%E7%89%B9%E6%AE%8A%E5%AD%97%E7%AC%A6%E3%80%82">https://github.com/h13t0ry/UnicodeToy：可以fuzz这种特殊字符。</a></p>
+<h2 id="参考引用"><a href="#参考引用" class="headerlink" title="参考引用"></a>参考引用</h2><p><a target="_blank" rel="noopener" href="https://www.tr0y.wang/2020/08/18/IDN/">从一个绕过长度限制的 XSS 中，我们能学到什么？</a></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/categories/">Writing</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E7%A5%9E%E5%A5%87%E7%9A%84%E9%95%BF%E5%BA%A6%E7%BB%95%E8%BF%87"><span class="toc-number">2.</span> <span class="toc-text">一个神奇的长度绕过</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IDN"><span class="toc-number">3.</span> <span class="toc-text">IDN</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Punycode"><span class="toc-number">4.</span> <span class="toc-text">Punycode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%92%93%E9%B1%BC"><span class="toc-number">5.</span> <span class="toc-text">钓鱼</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Unicode%E7%9A%84%E8%A7%84%E8%8C%83%E5%8C%96"><span class="toc-number">6.</span> <span class="toc-text">Unicode的规范化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BD%9C%E5%9C%A8%E5%88%A9%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">7.</span> <span class="toc-text">潜在利用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%95%E8%BF%87%E5%AD%97%E7%AC%A6%E8%BF%87%E6%BB%A4"><span class="toc-number">7.1.</span> <span class="toc-text">绕过字符过滤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%95%E8%BF%87%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6"><span class="toc-number">7.2.</span> <span class="toc-text">绕过长度限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SQL-%E6%B3%A8%E5%85%A5"><span class="toc-number">7.3.</span> <span class="toc-text">SQL 注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5"><span class="toc-number">7.4.</span> <span class="toc-text">模板注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5"><span class="toc-number">7.5.</span> <span class="toc-text">命令注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A"><span class="toc-number">7.6.</span> <span class="toc-text">目录穿越</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ssrf"><span class="toc-number">7.7.</span> <span class="toc-text">ssrf</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%95%E8%BF%87%E6%96%87%E4%BB%B6%E5%90%8E%E7%BC%80%E9%99%90%E5%88%B6"><span class="toc-number">7.8.</span> <span class="toc-text">绕过文件后缀限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#url-%E8%B7%B3%E8%BD%AC"><span class="toc-number">7.9.</span> <span class="toc-text">url 跳转</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B6%8A%E6%9D%83"><span class="toc-number">7.10.</span> <span class="toc-text">越权</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E4%BB%A5%E4%BD%BF%E7%94%A8%E7%9A%84%E5%B7%A5%E5%85%B7"><span class="toc-number">8.</span> <span class="toc-text">可以使用的工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E5%BC%95%E7%94%A8"><span class="toc-number">9.</span> <span class="toc-text">参考引用</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&text=IDN对XSS长度限制绕过的思考"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&title=IDN对XSS长度限制绕过的思考"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&is_video=false&description=IDN对XSS长度限制绕过的思考"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=IDN对XSS长度限制绕过的思考&body=Check out this article: http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&title=IDN对XSS长度限制绕过的思考"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&title=IDN对XSS长度限制绕过的思考"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&title=IDN对XSS长度限制绕过的思考"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&title=IDN对XSS长度限制绕过的思考"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&name=IDN对XSS长度限制绕过的思考&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://lotharshi.github.io/2023/03/20/IDN%E5%AF%B9XSS%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87%E7%9A%84%E6%80%9D%E8%80%83/&t=IDN对XSS长度限制绕过的思考"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2023
+    Lothar
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Writing</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJJPDKLTJM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RJJPDKLTJM');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
