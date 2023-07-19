@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="哈希算法和哈希值官方一点的解释维基百科是这样说的：  散列函数（英語：Hash function）又称散列算法、哈希函数，是一种从任何一种数据中创建小的数字“指纹”的方法。散列函数把消息或数据压缩成摘要，使得数据量变小，将数据的格式固定下来。该函数将数据打乱混合，重新创建一个叫做散列值（hash values，hash codes，hash sums，或hashes）的指纹。散列值通常用一个短的随">
+<meta property="og:type" content="article">
+<meta property="og:title" content="模糊哈希">
+<meta property="og:url" content="http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/index.html">
+<meta property="og:site_name" content="Where Lothar Writes Blogs">
+<meta property="og:description" content="哈希算法和哈希值官方一点的解释维基百科是这样说的：  散列函数（英語：Hash function）又称散列算法、哈希函数，是一种从任何一种数据中创建小的数字“指纹”的方法。散列函数把消息或数据压缩成摘要，使得数据量变小，将数据的格式固定下来。该函数将数据打乱混合，重新创建一个叫做散列值（hash values，hash codes，hash sums，或hashes）的指纹。散列值通常用一个短的随">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-07-19T13:32:18.000Z">
+<meta property="article:modified_time" content="2023-07-19T14:06:26.073Z">
+<meta property="article:author" content="Lothar">
+<meta property="article:tag" content="Crypto">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>模糊哈希</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Writing</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/06/06/re%E9%89%B4%E5%88%AB%E8%A1%A8%E7%A4%BA%E6%95%B0%E5%80%BC%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&text=模糊哈希"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&title=模糊哈希"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&is_video=false&description=模糊哈希"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=模糊哈希&body=Check out this article: http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&title=模糊哈希"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&title=模糊哈希"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&title=模糊哈希"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&title=模糊哈希"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&name=模糊哈希&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&t=模糊哈希"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95%E5%92%8C%E5%93%88%E5%B8%8C%E5%80%BC"><span class="toc-number">1.</span> <span class="toc-text">哈希算法和哈希值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%98%E6%96%B9%E4%B8%80%E7%82%B9%E7%9A%84%E8%A7%A3%E9%87%8A"><span class="toc-number">1.1.</span> <span class="toc-text">官方一点的解释</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A6%BB%E6%88%91%E4%BB%AC%E6%9B%B4%E8%BF%91%E4%B8%80%E4%BA%9B"><span class="toc-number">1.2.</span> <span class="toc-text">离我们更近一些</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%93%88%E5%B8%8C%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-number">2.</span> <span class="toc-text">文件哈希的特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E8%83%BD%E4%BA%A7%E7%94%9F%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">3.</span> <span class="toc-text">可能产生的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C"><span class="toc-number">4.</span> <span class="toc-text">模糊哈希</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-number">4.1.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C"><span class="toc-number">4.2.</span> <span class="toc-text">结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SSDEEP-Project"><span class="toc-number">5.</span> <span class="toc-text">SSDEEP Project</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        模糊哈希
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Lothar</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-07-19T13:32:18.000Z" itemprop="datePublished">2023-07-19</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Crypto/" rel="tag">Crypto</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="哈希算法和哈希值"><a href="#哈希算法和哈希值" class="headerlink" title="哈希算法和哈希值"></a>哈希算法和哈希值</h2><h3 id="官方一点的解释"><a href="#官方一点的解释" class="headerlink" title="官方一点的解释"></a>官方一点的解释</h3><p>维基百科是这样说的：</p>
+<blockquote>
+<p>散列函数（英語：Hash function）又称散列算法、哈希函数，是一种从任何一种数据中创建小的数字“指纹”的方法。散列函数把消息或数据压缩成摘要，使得数据量变小，将数据的格式固定下来。该函数将数据打乱混合，重新创建一个叫做散列值（hash values，hash codes，hash sums，或hashes）的指纹。散列值通常用一个短的随机字母和数字组成的字符串来代表。好的散列函数在输入域中很少出现散列冲突。</p>
+</blockquote>
+<h3 id="离我们更近一些"><a href="#离我们更近一些" class="headerlink" title="离我们更近一些"></a>离我们更近一些</h3><p>一个字符串可以有对应的哈希值，一个文件也可以有对应的哈希值。由哈希算法的原理可知，通过检验一个文件哈希值是否相同便可以判断文件内容是否产生了变化。</p>
+<p>在文件这方面，<code>SHA1</code>和<code>MD5</code>可能是最常用的两种散列算法。</p>
+<p>比如现在在下载很多文件的时候，网站上都会给出文件对应的<code>SHA1</code>值或<code>MD5</code>值，下载完成后可以在本地计算文件对应的散列值，从而确认下载的是不是自己想要下载的文件。</p>
+<p>因此，哈希值在检测入侵或恶意文件样本的时候会很有用。</p>
+<h2 id="文件哈希的特点"><a href="#文件哈希的特点" class="headerlink" title="文件哈希的特点"></a>文件哈希的特点</h2><p>由于文件的哈希值相当于文件的指纹，文件只要改变了，哈希值都会产生变化。这个改变甚至可以非常细微，比如仅仅是在末尾加了一个无关痛痒的byte，也会让哈希值产生巨大的变化。</p>
+<h2 id="可能产生的问题"><a href="#可能产生的问题" class="headerlink" title="可能产生的问题"></a>可能产生的问题</h2><p>哈希其实可以分为两种，一种是精准哈希，一种是模糊哈希。后者是我们今天后面所要提到的重点，而前者则是通常情况我们所谈论哈希时所指的。</p>
+<p>正如同刚才所讲到的，文件内容稍有改变，哈希值就会产生变化。这对于入侵检测来说其实会带来问题，攻击的样本可能是在一个基础上有着千奇百怪的变化，如果把千千万万种精准哈希都存储起来作为校对，一个方面是对空间需求不小，另一方面则是难以预防。</p>
+<p>因此，模糊哈希的诞生也算是应运而生理所应当。</p>
+<h2 id="模糊哈希"><a href="#模糊哈希" class="headerlink" title="模糊哈希"></a>模糊哈希</h2><p>模糊哈希是一种<strong>基于内容分割</strong>的分片哈希算法 (context triggered piecewise hashing, CTPH)。它可以被用来实现对文件的相似性检验。</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>首先，有一个<strong>弱哈希算法</strong>。它被用来计算文件的局部内容，从而确定分片的大小（也就是分片条件），方便对文件进行分片。</p>
+<p>其次，有一个<strong>强哈希算法</strong>。它被用来计算每片的内容的哈希值，这些值中的一部分被拿来和分片条件一起构成模糊哈希的结果。</p>
+<p>对于两个不同文件的模糊哈希值，通常会使用一个字符串相似性比对算法，来判断两个模糊哈希的相似程度，从而决定两个文件的相似程度。</p>
+<h3 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h3><p>对于某个恶意软件来说，即便对其进行一些变化，比如在多处增加，修改，删除一些内容，使用模糊哈希仍然能比较好的识别出其与源文件之间的<strong>关联性</strong>。</p>
+<p>这其实很像在人脸识别的时候，无论化妆和不化妆都能被认出来是这个人，这才是比较理想的判断方案。</p>
+<p>而模糊哈希在文件识别领域可以比较好地实现这一目标。</p>
+<h2 id="SSDEEP-Project"><a href="#SSDEEP-Project" class="headerlink" title="SSDEEP Project"></a>SSDEEP Project</h2><p>一个在多个平台都有支持的开源项目是<a target="_blank" rel="noopener" href="https://ssdeep-project.github.io/ssdeep/index.html">SSDEEP Project</a>。</p>
+<p>其主页里写道：</p>
+<blockquote>
+<p>Although “better fuzzy hashes” are available, ssdeep is still one of the primary choices because of its speed (now about twice as fast as TLSH) and being a de facto standard.</p>
+</blockquote>
+<p>不过这段话写下的时间应该是2017年，现在是否有更好的产品出现，也还有待考究，值得探索。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/categories/">Writing</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95%E5%92%8C%E5%93%88%E5%B8%8C%E5%80%BC"><span class="toc-number">1.</span> <span class="toc-text">哈希算法和哈希值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%98%E6%96%B9%E4%B8%80%E7%82%B9%E7%9A%84%E8%A7%A3%E9%87%8A"><span class="toc-number">1.1.</span> <span class="toc-text">官方一点的解释</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A6%BB%E6%88%91%E4%BB%AC%E6%9B%B4%E8%BF%91%E4%B8%80%E4%BA%9B"><span class="toc-number">1.2.</span> <span class="toc-text">离我们更近一些</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E5%93%88%E5%B8%8C%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-number">2.</span> <span class="toc-text">文件哈希的特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E8%83%BD%E4%BA%A7%E7%94%9F%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">3.</span> <span class="toc-text">可能产生的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C"><span class="toc-number">4.</span> <span class="toc-text">模糊哈希</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-number">4.1.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C"><span class="toc-number">4.2.</span> <span class="toc-text">结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SSDEEP-Project"><span class="toc-number">5.</span> <span class="toc-text">SSDEEP Project</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&text=模糊哈希"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&title=模糊哈希"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&is_video=false&description=模糊哈希"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=模糊哈希&body=Check out this article: http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&title=模糊哈希"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&title=模糊哈希"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&title=模糊哈希"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&title=模糊哈希"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&name=模糊哈希&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://lotharshi.github.io/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/&t=模糊哈希"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2023
+    Lothar
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Writing</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJJPDKLTJM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RJJPDKLTJM');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
